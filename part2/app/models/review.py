@@ -6,6 +6,7 @@ from app.models.base_model import BaseModel
 from app.models.user import User
 from app.models.place import Place
 
+
 class Review(BaseModel):
     """
     Review entity with validation and attributes
@@ -20,14 +21,14 @@ class Review(BaseModel):
         self.rating = rating
         self.place = place
         self.user = user
-    
+
     @property
     def text(self):
         """
         Getter for review text !
         """
         return self.__text
-    
+
     @text.setter
     def text(self, value):
         """
@@ -36,15 +37,15 @@ class Review(BaseModel):
         if not isinstance(value, str) or not value.strip():
             raise ValueError("Review text must be a non-empty string")
         self.__text = value
-    
+
     @property
     def rating(self):
         """
         Getter for review rating
         """
         return self.__rating
-    
-    rating.setter
+
+    @rating.setter
     def rating(self, value):
         """
         Setter for review rating with range validation
