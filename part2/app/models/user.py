@@ -96,3 +96,46 @@ class User(BaseModel):
             raise ValueError("is_admin must be a boolean")
         self.__is_admin = value
         self.save()
+
+def add_place(self, place):
+    """
+    Add a place to the user
+    """
+    self.__places.append(place)
+    self.save()
+
+def remove_place(self, place):
+    """
+    Remove a place from the user
+    """
+    if place in self.__places:
+        self.__places.remove(place)
+        self.save()
+
+def add_review(self, review):
+    """
+    Add a review to the user
+    """
+    self.__reviews.append(review)
+    self.save()
+
+def remove_review(self, review):
+    """
+    Remove a review from the user
+    """
+    if review in self.__reviews:
+        self.__reviews.remove(review)
+        self.save()
+
+def to_dict(self):
+    """Convert the User instance to a dictionary."""
+    return {
+        "id": self.id,
+        "first_name": self.first_name,
+        "last_name": self.last_name,
+        "email": self.email,
+        "is_admin": self.is_admin,
+        "places": [place.to_dict() for place in self.places],
+        "reviews": [review.to_dict() for review in self.reviews]
+    }
+
