@@ -38,7 +38,6 @@ class User(BaseModel):
         if not value or len(value) > 50:
             raise ValueError("Invalid first name")
         self.__first_name = value
-        self.save()
 
     @property
     def last_name(self):
@@ -55,7 +54,6 @@ class User(BaseModel):
         if not value or len(value) > 50:
             raise ValueError("Invalid last name")
         self.__last_name = value
-        self.save()
 
     @property
     def email(self):
@@ -72,7 +70,6 @@ class User(BaseModel):
         if not re.match(r"[^@]+@[^@]+\.[^@]+", new_email):
             raise ValueError("Invalid email format")
         self.__email = new_email
-        self.save()
 
     @property
     def is_admin(self):
@@ -89,7 +86,6 @@ class User(BaseModel):
         if not isinstance(value, bool):
             raise ValueError("is_admin must be a boolean")
         self.__is_admin = value
-        self.save()
 
     def add_place(self, place):
         """
