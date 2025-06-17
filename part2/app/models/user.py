@@ -95,27 +95,27 @@ class User(BaseModel):
             """
             Add a place to the user
             """
-            self.__places.append(place)
+            self.places.append(place)
 
         def remove_place(self, place):
             """
             Remove a place from the user
             """
-            if place in self.__places:
-                self.__places.remove(place)
+            if place in self.places:
+                self.places.remove(place)
 
         def add_review(self, review):
             """
             Add a review to the user
             """
-            self.__reviews.append(review)
+            self.reviews.append(review)
 
         def remove_review(self, review):
             """
             Remove a review from the user
             """
-            if review in self.__reviews:
-                self.__reviews.remove(review)
+            if review in self.reviews:
+                self.reviews.remove(review)
 
         def to_dict(self):
             """
