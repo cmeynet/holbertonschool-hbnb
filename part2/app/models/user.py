@@ -97,7 +97,6 @@ class User(BaseModel):
             """
             self.__places.append(place)
 
-
         def remove_place(self, place):
             """
             Remove a place from the user
@@ -117,8 +116,6 @@ class User(BaseModel):
             """
             if review in self.__reviews:
                 self.__reviews.remove(review)
-    
-
 
         def to_dict(self):
             """
