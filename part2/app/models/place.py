@@ -5,7 +5,7 @@ from app.models.user import User
 class Place(BaseModel):
     """Place class to represent a place in the application."""
 
-    def __init__(self, title, description, price, latitude, longitude, owner):
+    def __init__(self, title, price, latitude, longitude, owner, description=""):
         """Initialize a new Place instance."""
         super().__init__()
         self.title = title
@@ -25,6 +25,8 @@ class Place(BaseModel):
     def title(self, value):
         if not isinstance(value, str):
             raise TypeError("Title must be a string")
+        if not value.strip():
+            raise ValueError("Title must not be empty")
         if len(value) > 100:
             raise ValueError("Title must not exceed 100 characters")
         self.__title = value
