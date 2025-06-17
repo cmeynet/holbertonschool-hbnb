@@ -14,5 +14,13 @@ class Review(BaseModel):
         """
         Initialize Review with validation delegated to setters
         """
+        super()._init__()
+
+        self.id = id
+        self.text = text
+        self.rating = rating
+        self.place = place
+        self.user = user
+        
 
 
