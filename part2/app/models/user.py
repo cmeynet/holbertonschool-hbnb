@@ -16,17 +16,12 @@ class User(BaseModel):
         """
         super().__init__()
 
-        if not first_name or len(first_name) > 50:
-            raise ValueError("Invalid first name")
-        if not last_name or len(last_name) > 50:
-            raise ValueError("Invalid last name")
-        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
-            raise ValueError("Invalid email")
-
-        self.__first_name = first_name
-        self.__last_name = last_name
-        self.__email = email
-        self.__is_admin = is_admin
+        self.first_name = first_name
+        self.last_name = last_name
+        self.email = email
+        self.is_admin = is_admin
+        self.places = []
+        self.reviews = []
 
     @property
     def first_name(self):
