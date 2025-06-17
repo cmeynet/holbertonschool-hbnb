@@ -91,42 +91,42 @@ class User(BaseModel):
         self.__is_admin = value
         self.save()
 
-        def add_place(self, place):
-            """
-            Add a place to the user
-            """
-            self.places.append(place)
+    def add_place(self, place):
+        """
+        Add a place to the user
+        """
+        self.places.append(place)
 
-        def remove_place(self, place):
-            """
-            Remove a place from the user
-            """
-            if place in self.places:
-                self.places.remove(place)
+    def remove_place(self, place):
+        """
+        Remove a place from the user
+        """
+        if place in self.places:
+            self.places.remove(place)
 
-        def add_review(self, review):
-            """
-            Add a review to the user
-            """
-            self.reviews.append(review)
+    def add_review(self, review):
+        """
+        Add a review to the user
+        """
+        self.reviews.append(review)
 
-        def remove_review(self, review):
-            """
-            Remove a review from the user
-            """
-            if review in self.reviews:
-                self.reviews.remove(review)
+    def remove_review(self, review):
+        """
+        Remove a review from the user
+        """
+        if review in self.reviews:
+            self.reviews.remove(review)
 
-        def to_dict(self):
-            """
-            Convert the User instance to a dictionary
-            """
-            return {
-                "id": self.id,
-                "first_name": self.first_name,
-                "last_name": self.last_name,
-                "email": self.email,
-                "is_admin": self.is_admin,
-                "places": [place.to_dict() for place in self.places],
-                "reviews": [review.to_dict() for review in self.reviews]
-                }
+    def to_dict(self):
+        """
+        Convert the User instance to a dictionary
+        """
+        return {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "is_admin": self.is_admin,
+            "places": [place.to_dict() for place in self.places],
+            "reviews": [review.to_dict() for review in self.reviews]
+            }
