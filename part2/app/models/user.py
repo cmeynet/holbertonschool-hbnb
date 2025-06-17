@@ -30,28 +30,6 @@ class User(BaseModel):
         """
         return self.__first_name
 
-    @property
-    def last_name(self):
-        """
-        Getter for last name
-        """
-        return self.__last_name
-
-    @property
-    def email(self):
-        """
-        Getter for email
-        """
-        return self.__email
-
-    @property
-    def is_admin(self):
-        """
-        Getter for admin status
-        """
-        return self.__is_admin
-
-
     @first_name.setter
     def first_name(self, value):
         """
@@ -61,6 +39,13 @@ class User(BaseModel):
             raise ValueError("Invalid first name")
         self.__first_name = value
         self.save()
+
+    @property
+    def last_name(self):
+        """
+        Getter for last name
+        """
+        return self.__last_name
 
     @last_name.setter
     def last_name(self, value):
@@ -72,6 +57,13 @@ class User(BaseModel):
         self.__last_name = value
         self.save()
 
+    @property
+    def email(self):
+        """
+        Getter for email
+        """
+        return self.__email
+
     @email.setter
     def email(self, new_email):
         """
@@ -81,6 +73,13 @@ class User(BaseModel):
             raise ValueError("Invalid email format")
         self.__email = new_email
         self.save()
+
+    @property
+    def is_admin(self):
+        """
+        Getter for admin status
+        """
+        return self.__is_admin
 
     @is_admin.setter
     def is_admin(self, value):
@@ -92,12 +91,14 @@ class User(BaseModel):
         self.__is_admin = value
         self.save()
 
+
 def add_place(self, place):
     """
     Add a place to the user
     """
     self.__places.append(place)
     self.save()
+
 
 def remove_place(self, place):
     """
@@ -107,12 +108,14 @@ def remove_place(self, place):
         self.__places.remove(place)
         self.save()
 
+
 def add_review(self, review):
     """
     Add a review to the user
     """
     self.__reviews.append(review)
     self.save()
+
 
 def remove_review(self, review):
     """
@@ -121,6 +124,7 @@ def remove_review(self, review):
     if review in self.__reviews:
         self.__reviews.remove(review)
         self.save()
+
 
 def to_dict(self):
     """Convert the User instance to a dictionary."""
@@ -133,4 +137,3 @@ def to_dict(self):
         "places": [place.to_dict() for place in self.places],
         "reviews": [review.to_dict() for review in self.reviews]
     }
-
