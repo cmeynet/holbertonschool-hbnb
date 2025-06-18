@@ -18,6 +18,11 @@ class TestPlaceModel(unittest.TestCase):
         self.assertEqual(p.title, "Villa")
         self.assertEqual(p.price, 200.0)
 
+    def test_negative_price(self):
+        with self.assertRaises(ValueError):
+            Place("Cabane", -10.0, 45.0, 1.0, self.owner)
+
+
     def test_invalid_latitude(self):
         with self.assertRaises(ValueError):
             Place("Loft", 100.0, 200.0, 2.0, self.owner)
