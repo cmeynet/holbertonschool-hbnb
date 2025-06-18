@@ -1,3 +1,8 @@
+# Ajoute le dossier "part2/" au chemin d'import pour que "app"
+# soit reconnu comme module sinon ça génère 1 erreur !
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
 import unittest
 from app.models.place import Place
 from app.models.user import User
