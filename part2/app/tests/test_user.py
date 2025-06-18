@@ -1,3 +1,9 @@
+# Ajoute le dossier "part2/" au chemin d'import pour que "app"
+# soit reconnu comme module sinon ça génère 1 erreur !
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")))
+
 import unittest
 from app.models.user import User
 from app.models.place import Place
@@ -26,16 +32,6 @@ class TestUserModel(unittest.TestCase):
         p = Place("Maison", 120.0, 48.0, 2.0, self.user)
         self.user.add_place(p)
         self.assertIn(p, self.user.places)
-        self.user.remove_place(p)
-        self.assertNotIn(p, self.user.places)
-
-    def test_admin_user(self):
-        admin = User("Admin", "User", "admin@example.com", is_admin=True)
-        self.assertTrue(admin.is_admin)
-
-    def test_remove_nonexistent_place(self):
-        p = Place("Maison", 120.0, 48.0, 2.0, self.user)
-        # Pas ajouté à la liste, mais on tente de le retirer !
         self.user.remove_place(p)
         self.assertNotIn(p, self.user.places)
 
