@@ -16,7 +16,7 @@ class TestReviewModel(unittest.TestCase):
 
     def test_valid_review(self):
         r = Review("Lieu très agréable", 5, self.place, self.user)
-        self.assertEqual(r.text, "Très sympa")
+        self.assertEqual(r.text, "Lieu très agréable")
         self.assertEqual(r.rating, 5)
         self.assertEqual(r.place, self.place)
         self.assertEqual(r.user, self.user)
