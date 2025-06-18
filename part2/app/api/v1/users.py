@@ -35,7 +35,7 @@ class UserList(Resource):
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
         """Get list of all users"""
-        users = facade.user_repo.get_all()
+        users = facade.get_all_users()
         return [user.to_dict() for user in users], 200
 
 
@@ -50,7 +50,7 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
         return user.to_dict(), 200
 
-    @api.expect(user_model, validate=True)
+    @api.expect(user_model)
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
     @api.response(400, 'Email already used by another user')
