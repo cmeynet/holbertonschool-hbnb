@@ -41,5 +41,14 @@ class TestPlaceModel(unittest.TestCase):
         p.add_amenity(a)
         self.assertIn(a, p.amenities)
 
+    def test_add_and_remove_amenity(self):
+        p = Place("Cabane", 90.0, 45.0, 1.0, self.owner)
+        a = Amenity("Jacuzzi")
+        p.add_amenity(a)
+        self.assertIn(a, p.amenities)
+        p.delete_amenity(a)
+        self.assertNotIn(a, p.amenities)
+
+
 if __name__ == "__main__":
     unittest.main()
