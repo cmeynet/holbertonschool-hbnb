@@ -25,3 +25,11 @@ class TestReviewModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             Review("", 3, self.place, self.user)
 
+    def test_invalid_rating(self):
+        with self.assertRaises(ValueError):
+            Review("Top", 6, self.place, self.user)
+
+if __name__ == "__main__":
+    unittest.main()
+
+
