@@ -14,4 +14,14 @@ class TestReviewModel(unittest.TestCase):
         self.user = User("Clemence", "Meynet", "clemence@exemple.com")
         self.place = Place("Studio", 100.0, 45.0, 1.0, self.user)
 
+    def test_valid_review(self):
+        r = Review("Lieu très agréable", 5, self.place, self.user)
+        self.assertEqual(r.text, "Très sympa")
+        self.assertEqual(r.rating, 5)
+        self.assertEqual(r.place, self.place)
+        self.assertEqual(r.user, self.user)
+
+    def test_empty_text(self):
+        with self.assertRaises(ValueError):
+            Review("", 3, self.place, self.user)
 
