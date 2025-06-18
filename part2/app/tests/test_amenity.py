@@ -19,7 +19,7 @@ class TestAmenityModel(unittest.TestCase):
 
     def test_name_too_long(self):
         with self.assertRaises(ValueError):
-            Amenity("x" * 100)
+            Amenity("x" * 50)
 
 if __name__ == "__main__":
     unittest.main()
