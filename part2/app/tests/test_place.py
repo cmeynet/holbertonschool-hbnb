@@ -33,14 +33,7 @@ class TestPlaceModel(unittest.TestCase):
     def test_invalid_longitude(self):
         with self.assertRaises(ValueError):
             Place("Studio", 100.0, 40.0, 200.0, self.owner)
-
-
-    def test_add_amenity(self):
-        p = Place("Chalet", 180.0, 45.0, 1.0, self.owner)
-        a = Amenity("Wifi")
-        p.add_amenity(a)
-        self.assertIn(a, p.amenities)
-
+  
     def test_add_and_remove_amenity(self):
         p = Place("Cabane", 90.0, 45.0, 1.0, self.owner)
         a = Amenity("Jacuzzi")
