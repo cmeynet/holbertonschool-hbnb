@@ -15,7 +15,7 @@ class Review(BaseModel):
         """
         Initialize Review with validation delegated to setters
         """
-        super()._init__()
+        super().__init__()
 
         self.text = text
         self.rating = rating
@@ -98,6 +98,6 @@ class Review(BaseModel):
             "rating": self.rating,
             "place_id": self.place.id if self.place else None,
             "user_id": self.user.id if self.user else None,
-            "created_at": self.created_at.isoformat(),
-            "updated_at": self.updated_at.isoformat()
+            #"created_at": self.created_at.isoformat(),
+            #"updated_at": self.updated_at.isoformat()
         }
