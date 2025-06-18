@@ -28,6 +28,10 @@ class TestUserModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             User("", "Boutin", "elie.boutin@exemple.fr")
 
+    def test_invalid_last_name(self):
+        with self.assertRaises(ValueError):
+            User("Elie", "", "elie.boutin@exemple.fr")
+
     def test_add_and_remove_place(self):
         p = Place("Maison", 120.0, 48.0, 2.0, self.user)
         self.user.add_place(p)
