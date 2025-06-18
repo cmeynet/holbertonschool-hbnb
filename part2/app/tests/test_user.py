@@ -35,7 +35,7 @@ class TestUserModel(unittest.TestCase):
 
     def test_remove_nonexistent_place(self):
         p = Place("Maison", 120.0, 48.0, 2.0, self.user)
-        # Pas ajouté à la liste, mais on tente de le retirer
+        # Pas ajouté à la liste, mais on tente de le retirer !
         self.user.remove_place(p)
         self.assertNotIn(p, self.user.places)
 
