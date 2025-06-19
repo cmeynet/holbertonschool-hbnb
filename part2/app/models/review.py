@@ -101,3 +101,13 @@ class Review(BaseModel):
             #"created_at": self.created_at.isoformat(),
             #"updated_at": self.updated_at.isoformat()
         }
+
+    @classmethod
+    def get_by_id(cls, review_id):
+        #  Récupère une review à partir de son ID
+        return cls._storage.get(review_id)
+
+    @classmethod
+    def get_all(cls):
+        # Renvoie toutes les reviews stockées
+        return list(cls._storage.values())
