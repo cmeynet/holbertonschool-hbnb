@@ -70,15 +70,25 @@ class ReviewResource(Resource):
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
     def delete(self, review_id):
-        """Delete a review"""
-        # Placeholder for the logic to delete a review
-        pass
+        """
+        Delete a review
+        """
+        try:
+            result = facade.delete_review(review_id)
+            return result, 200
+        except ValueError as erreur:
+            return {'error': str(erreur)}, 404
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
     @api.response(200, 'List of reviews for the place retrieved successfully')
     @api.response(404, 'Place not found')
     def get(self, place_id):
-        """Get all reviews for a specific place"""
-        # Placeholder for logic to return a list of reviews for a place
-        pass
+        """
+        Get all reviews for a specific place
+        """
+        try:
+            reviews = facade.get_reviews_by_place(place_id)
+            return [r.to_dict() for r in reviews], 200
+        except ValueError as erreur:
+            return {'error': str(erreur)}, 404
