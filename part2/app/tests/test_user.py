@@ -20,6 +20,10 @@ class TestUserModel(unittest.TestCase):
         self.assertEqual(self.user.email, "elie.boutin@exemple.fr")
         self.assertFalse(self.user.is_admin)
 
+    def test_admin_user(self):
+        admin = User("Admin", "User", "admin@example.com", is_admin=True)
+        self.assertTrue(admin.is_admin)
+
     def test_invalid_email(self):
         with self.assertRaises(ValueError):
             User("Elie", "Boutin", "invalid-email")
