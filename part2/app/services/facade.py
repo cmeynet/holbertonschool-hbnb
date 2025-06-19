@@ -60,6 +60,78 @@ class HBnBFacade:
         if not owner:
             raise ValueError("Owner not found")
 
+
+    # Review
+    def create_review(self, review_data):
+        text = review_data.get('text')
+        rating = review_data.get('rating')
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
+
+        if not text or not isinstance(text, str):
+            raise ValueError("Review text is required and must be a string")
+
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
+            raise ValueError("Rating must be an integer between 1 and 5")
+
+        user = User.get_by_id(user_id)
+        place = Place.get_by_id(place_id)
+
+        if user is None or place is None:
+            raise ValueError("User or Place not found")
+
+        review = Review(text, rating, place, user)
+        self.review_storage[review.id] = review
+        place.add_review(review)
+        return review
+
+    def get_review(self, review_id):
+        review = self.review_storage.get(review_id)
+        if not review:
+            raise ValueError("Review not found")
+        return review
+
+    def get_all_reviews(self):
+        return list(self.review_storage.values())
+
+    def get_reviews_by_place(self, place_id):
+        place = Place.get_by_id(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        return place.reviews
+
+    def update_review(self, review_id, review_data):
+        review = self.review_storage.get(review_id)
+        if not review:
+            raise ValueError("Review not found")
+
+        text = review_data.get('text')
+        rating = review_data.get('rating')
+
+        if text is not None:
+            if not isinstance(text, str) or not text.strip():
+                raise ValueError("Review text must be a non-empty string")
+            review.text = text
+
+        if rating is not None:
+            if not isinstance(rating, int) or not (1 <= rating <= 5):
+                raise ValueError("Rating must be an integer between 1 and 5")
+            review.rating = rating
+
+        return review
+
+    def delete_review(self, review_id):
+        review = self.review_storage.get(review_id)
+        if not review:
+            raise ValueError("Review not found")
+
+        if review.place:
+            review.place.delete_review(review)
+
+        del self.review_storage[review_id]
+        return {"message": "Review deleted successfully"}
+
+
         # Charge the amenities
         amenities = []
         for amenity_id in place_data.get('amenities', []):
