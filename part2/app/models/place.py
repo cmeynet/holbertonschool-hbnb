@@ -5,7 +5,11 @@ from app.models.user import User
 class Place(BaseModel):
     """Place class to represent a place in the application."""
 
+<<<<<<< HEAD
     def __init__(self, title, price, latitude, longitude, owner, description=""):
+=======
+    def __init__(self, title, price, latitude, longitude, owner, description="", amenities=None):
+>>>>>>> 3a7abc9f6fd6250b4c63a3606facafe31f90b44e
         """Initialize a new Place instance."""
         super().__init__()
         self.title = title
@@ -15,7 +19,11 @@ class Place(BaseModel):
         self.longitude = longitude
         self.owner = owner
         self.reviews = []  # List to store related reviews
+<<<<<<< HEAD
         self.amenities = []  # List to store related amenities
+=======
+        self.amenities = amenities or []  # List to store related amenities
+>>>>>>> 3a7abc9f6fd6250b4c63a3606facafe31f90b44e
 
     @property
     def title(self):
@@ -112,7 +120,11 @@ class Place(BaseModel):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
+<<<<<<< HEAD
             "owner_id": self.owner.id if self.owner else None,
+=======
+            "owner_id": self.owner.to_dict() if self.owner else None,
+>>>>>>> 3a7abc9f6fd6250b4c63a3606facafe31f90b44e
             "reviews": [review.to_dict() for review in self.reviews],
             "amenities": [amenity.to_dict() for amenity in self.amenities]
         }
