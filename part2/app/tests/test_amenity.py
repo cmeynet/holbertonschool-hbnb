@@ -21,6 +21,10 @@ class TestAmenityModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             Amenity("x" * 51)
 
+    def test_empty_name(self):
+        with self.assertRaises(ValueError):
+            Amenity("")
+
 if __name__ == "__main__":
     unittest.main()
 import unittest
