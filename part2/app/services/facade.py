@@ -62,38 +62,34 @@ class HBnBFacade:
 
 
     # Review
-    class HBnBFacade:
-        def __init__(self):
-            self.review_storage = {}
+    def create_review(self, review_data):
+        text = review_data.get('text')
+        rating = review_data.get('rating')
+        user_id = review_data.get('user_id')
+        place_id = review_data.get('place_id')
 
-        def create_review(self, review_data):
-            text = review_data.get('text')
-            rating = review_data.get('rating')
-            user_id = review_data.get('user_id')
-            place_id = review_data.get('place_id')
+        if not text or not isinstance(text, str):
+            raise ValueError("Review text is required and must be a string")
 
-            if not text or not isinstance(text, str):
-                raise ValueError("Review text is required and must be a string")
+        if not isinstance(rating, int) or not (1 <= rating <= 5):
+            raise ValueError("Rating must be an integer between 1 and 5")
 
-            if not isinstance(rating, int) or not (1 <= rating <= 5):
-                raise ValueError("Rating must be an integer between 1 and 5")
+        user = User.get_by_id(user_id)
+        place = Place.get_by_id(place_id)
 
-            user = User.get_by_id(user_id)
-            place = Place.get_by_id(place_id)
+        if user is None or place is None:
+            raise ValueError("User or Place not found")
 
-            if user is None or place is None:
-                raise ValueError("User or Place not found")
+        review = Review(text, rating, place, user)
+        self.review_storage[review.id] = review
+        place.add_review(review)
+        return review
 
-            review = Review(text, rating, place, user)
-            self.review_storage[review.id] = review
-            place.add_review(review)
-            return review
-
-        def get_review(self, review_id):
-            review = self.review_storage.get(review_id)
-            if not review:
-                raise ValueError("Review not found")
-            return review
+    def get_review(self, review_id):
+        review = self.review_storage.get(review_id)
+        if not review:
+            raise ValueError("Review not found")
+        return review
 
     def get_all_reviews(self):
         return list(self.review_storage.values())
@@ -129,7 +125,6 @@ class HBnBFacade:
         if not review:
             raise ValueError("Review not found")
 
-        # Supprimer aussi du place.reviews si nécessaire
         if review.place:
             review.place.delete_review(review)
 
