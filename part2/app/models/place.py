@@ -112,11 +112,7 @@ class Place(BaseModel):
             "price": self.price,
             "latitude": self.latitude,
             "longitude": self.longitude,
-<<<<<<< HEAD
-            "owner_id": self.owner.id if self.owner else None,
-=======
             "owner_id": self.owner.to_dict() if self.owner else None,
->>>>>>> 3a7abc9f6fd6250b4c63a3606facafe31f90b44e
             "reviews": [review.to_dict() for review in self.reviews],
             "amenities": [amenity.to_dict() for amenity in self.amenities]
         }
