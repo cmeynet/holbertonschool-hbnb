@@ -32,9 +32,17 @@ class TestUserModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             User("", "Boutin", "elie.boutin@exemple.fr")
 
+    def test_first_name_too_long(self):
+        with self.assertRaises(ValueError):
+            User("Victoire" * 51, "Boutin", "victoire@exemple.com")
+
     def test_invalid_last_name(self):
         with self.assertRaises(ValueError):
             User("Elie", "", "elie.boutin@exemple.fr")
+
+    def test_last_name_too_long(self):
+        with self.assertRaises(ValueError):
+            User("Isabelle", "Rehri" * 51, "isabelle@exemple.com")
 
     def test_add_and_remove_place(self):
         p = Place("Maison", 120.0, 48.0, 2.0, self.user)
