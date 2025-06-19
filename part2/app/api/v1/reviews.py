@@ -25,8 +25,8 @@ class ReviewList(Resource):
             data = request.get_json()
             review = facade.create_review(data)
             return review.to_dict(), 201
-        except ValueError as e:
-            return {'error': str(e)}, 400
+        except ValueError as erreur:
+            return {'error': str(erreur)}, 400
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -41,18 +41,31 @@ class ReviewResource(Resource):
     @api.response(200, 'Review details retrieved successfully')
     @api.response(404, 'Review not found')
     def get(self, review_id):
-        """Get review details by ID"""
-        # Placeholder for the logic to retrieve a review by ID
-        pass
-
+        """
+        Get review details by ID
+        """
+        try:
+            review = facade.get_review(review_id)
+            return review.to_dict(), 200
+        except ValueError as erreur:
+            return {'error': str(erreur)}, 404
+       
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
     @api.response(400, 'Invalid input data')
     def put(self, review_id):
-        """Update a review's information"""
-        # Placeholder for the logic to update a review by ID
-        pass
+        """
+        Update a review's information
+        """
+        try:
+            data = request.get_json()
+            updated_review = facade.update_review(review_id, data)
+            return {'message': 'Review updated successfully'}, 200
+        except ValueError as erreur:
+            return {'error': str(erreur)}, 404
+        except TypeError as erreur:
+            return {'error': str(erreur)}, 400
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
