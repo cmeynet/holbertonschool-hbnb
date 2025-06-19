@@ -33,6 +33,11 @@ class TestPlaceModel(unittest.TestCase):
     def test_invalid_longitude(self):
         with self.assertRaises(ValueError):
             Place("Studio", 100.0, 40.0, 200.0, self.owner)
+
+    def test_title_too_long(self):
+        long_title = "Villa Mialane" * 101
+        with self.assertRaises(ValueError):
+            Place(long_title, 120.0, 45.0, 2.0, self.owner)
   
     def test_add_and_remove_amenity(self):
         p = Place("Cabane", 90.0, 45.0, 1.0, self.owner)
