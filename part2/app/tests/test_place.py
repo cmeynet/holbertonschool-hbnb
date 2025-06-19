@@ -42,6 +42,9 @@ class TestPlaceModel(unittest.TestCase):
         p.delete_amenity(a)
         self.assertNotIn(a, p.amenities)
 
+    def test_owner_must_be_user(self):
+        with self.assertRaises(TypeError):
+            Place("Duplex", 90.0, 40.0, 2.0, "not_a_user")
 
 if __name__ == "__main__":
     unittest.main()
