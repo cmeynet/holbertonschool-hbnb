@@ -29,6 +29,14 @@ class TestReviewModel(unittest.TestCase):
         with self.assertRaises(ValueError):
             Review("Top", 6, self.place, self.user)
 
+    def test_user_must_be_user_instance(self):
+        with self.assertRaises(TypeError):
+            Review("Cool", 4, self.place, "not_a_user")
+
+    def test_place_must_be_place_instance(self):
+        with self.assertRaises(TypeError):
+            Review("Cool", 4, "not_a_place", self.user)
+
 if __name__ == "__main__":
     unittest.main()
 
