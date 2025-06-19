@@ -25,8 +25,8 @@ class ReviewList(Resource):
             data = request.get_json()
             review = facade.create_review(data)
             return review.to_dict(), 201
-        except ValueError as erreur:
-            return {'error': str(erreur)}, 400
+        except ValueError as error:
+            return {'error': str(error)}, 400
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -34,7 +34,7 @@ class ReviewList(Resource):
         Retrieve a list of all reviews
         """
         reviews = facade.get_all_reviews()
-        return [r.to_dict() for r in reviews], 200
+        return [rating.to_dict() for rating in reviews], 200
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -47,8 +47,8 @@ class ReviewResource(Resource):
         try:
             review = facade.get_review(review_id)
             return review.to_dict(), 200
-        except ValueError as erreur:
-            return {'error': str(erreur)}, 404
+        except ValueError as error:
+            return {"error": str(error)}, 404
        
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
@@ -61,11 +61,11 @@ class ReviewResource(Resource):
         try:
             data = request.get_json()
             updated_review = facade.update_review(review_id, data)
-            return {'message': 'Review updated successfully'}, 200
-        except ValueError as erreur:
-            return {'error': str(erreur)}, 404
-        except TypeError as erreur:
-            return {'error': str(erreur)}, 400
+            return {"message": 'Review updated successfully'}, 200
+        except ValueError as error:
+            return {"error": str(error)}, 404
+        except TypeError as error:
+            return {"error": str(error)}, 400
 
     @api.response(200, 'Review deleted successfully')
     @api.response(404, 'Review not found')
@@ -76,8 +76,8 @@ class ReviewResource(Resource):
         try:
             result = facade.delete_review(review_id)
             return result, 200
-        except ValueError as erreur:
-            return {'error': str(erreur)}, 404
+        except ValueError as error:
+            return {"error": str(error)}, 404
 
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
@@ -89,6 +89,6 @@ class PlaceReviewList(Resource):
         """
         try:
             reviews = facade.get_reviews_by_place(place_id)
-            return [r.to_dict() for r in reviews], 200
-        except ValueError as erreur:
-            return {'error': str(erreur)}, 404
+            return [rating.to_dict() for rating in reviews], 200
+        except ValueError as error:
+            return {"error": str(error)}, 404
