@@ -36,6 +36,7 @@ place_model = api.model('Place', {
     'reviews': fields.List(fields.Nested(review_model), description='List of reviews')
 })
 
+
 @api.route('/')
 class PlaceList(Resource):
     @api.expect(place_model)
@@ -56,6 +57,7 @@ class PlaceList(Resource):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
         return [place.to_dict() for place in places], 200
+
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -78,10 +80,9 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             return {'error': 'Place not found'}, 404
-        
-        try: 
+
+        try:
             facade.update_place(place_id, place_data)
             return {"message": "Place updated successfully"}, 200
         except Exception as e:
             return {'error': str(e)}, 400
-    
