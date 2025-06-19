@@ -12,6 +12,7 @@ review_model = api.model('Review', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
+
 @api.route('/')
 class ReviewList(Resource):
     @api.expect(review_model)
@@ -34,11 +35,8 @@ class ReviewList(Resource):
         Retrieve a list of all reviews
         """
         reviews = facade.get_all_reviews()
-<<<<<<< HEAD
-        return [rating.to_dict() for rating in reviews], 200
-=======
         return [review.to_dict() for review in reviews], 200
->>>>>>> dfb29ad2b4286cf3bb2e79e70eeebb2261cc4683
+
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
@@ -53,7 +51,7 @@ class ReviewResource(Resource):
             return review.to_dict(), 200
         except ValueError as error:
             return {"error": str(error)}, 404
-       
+
     @api.expect(review_model)
     @api.response(200, 'Review updated successfully')
     @api.response(404, 'Review not found')
@@ -64,13 +62,8 @@ class ReviewResource(Resource):
         """
         try:
             data = request.get_json()
-<<<<<<< HEAD
-            updated_review = facade.update_review(review_id, data)
-            return {"message": 'Review updated successfully'}, 200
-=======
             updated = facade.update_review(review_id, data)
             return {"message": "Review updated successfully"}, 200
->>>>>>> dfb29ad2b4286cf3bb2e79e70eeebb2261cc4683
         except ValueError as error:
             return {"error": str(error)}, 404
         except TypeError as error:
@@ -88,6 +81,7 @@ class ReviewResource(Resource):
         except ValueError as error:
             return {"error": str(error)}, 404
 
+
 @api.route('/places/<place_id>/reviews')
 class PlaceReviewList(Resource):
     @api.response(200, 'List of reviews for the place retrieved successfully')
@@ -98,10 +92,6 @@ class PlaceReviewList(Resource):
         """
         try:
             reviews = facade.get_reviews_by_place(place_id)
-<<<<<<< HEAD
-            return [rating.to_dict() for rating in reviews], 200
-=======
             return [review.to_dict() for review in reviews], 200
->>>>>>> dfb29ad2b4286cf3bb2e79e70eeebb2261cc4683
         except ValueError as error:
             return {"error": str(error)}, 404
