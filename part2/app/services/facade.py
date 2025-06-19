@@ -60,6 +60,40 @@ class HBnBFacade:
         if not owner:
             raise ValueError("Owner not found")
 
+        # Charge the amenities
+        amenities = []
+        for amenity_id in place_data.get('amenities', []):
+            amenity = self.get_amenity(amenity_id)
+            if not amenity:
+                raise ValueError(f"Amenity '{amenity_id}' not found")
+            amenities.append(amenity)
+
+        # Create the location with the `User` object, not just its ID
+        place = Place(
+            title=place_data['title'],
+            description=place_data.get('description'),
+            price=place_data['price'],
+            latitude=place_data['latitude'],
+            longitude=place_data['longitude'],
+            owner=owner,
+            amenities=amenities
+        )
+
+        self.place_repo.add(place)
+        return place
+
+    def get_place(self, place_id):
+        return self.place_repo.get(place_id)
+
+    def get_all_places(self):
+        return self.place_repo.get_all()
+
+    def update_place(self, place_id, place_data):
+        place = self.get_place(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        self.place_repo.update(place_id, place_data)
+        return place
 
     # Review
     def create_review(self, review_data):
@@ -130,39 +164,3 @@ class HBnBFacade:
 
         del self.review_storage[review_id]
         return {"message": "Review deleted successfully"}
-
-
-        # Charge the amenities
-        amenities = []
-        for amenity_id in place_data.get('amenities', []):
-            amenity = self.get_amenity(amenity_id)
-            if not amenity:
-                raise ValueError(f"Amenity '{amenity_id}' not found")
-            amenities.append(amenity)
-
-        # Create the location with the `User` object, not just its ID
-        place = Place(
-            title=place_data['title'],
-            description=place_data.get('description'),
-            price=place_data['price'],
-            latitude=place_data['latitude'],
-            longitude=place_data['longitude'],
-            owner=owner,
-            amenities=amenities
-        )
-
-        self.place_repo.add(place)
-        return place
-
-    def get_place(self, place_id):
-        return self.place_repo.get(place_id)
-
-    def get_all_places(self):
-        return self.place_repo.get_all()
-
-    def update_place(self, place_id, place_data):
-        place = self.get_place(place_id)
-        if not place:
-            raise ValueError("Place not found")
-        self.place_repo.update(place_id, place_data)
-        return place
