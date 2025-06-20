@@ -142,24 +142,24 @@ Each endpoint follows RESTful conventions. All responses are JSON.
 
 - `POST /api/v1/places/` — Create a place
 - `GET /api/v1/places/` — List all places
-- `GET /api/v1/places/<user_id>` — Get place details (with owner, amenities, reviews)
-- `PUT /api/v1/places/<user_id>` — Update place
+- `GET /api/v1/places/<place_id>` — Get place details (with owner, amenities, reviews)
+- `PUT /api/v1/places/<place_id>` — Update place
 
 ### Reviews
 
 - `POST /api/v1/reviews/` — Add a review
 - `GET /api/v1/reviews/` — List all reviews
-- `GET /api/v1/reviews/<user_id>` — Get review
-- `PUT /api/v1/reviews/<user_id>` — Update review
-- `DELETE /api/v1/reviews/<user_id>` — Delete review
+- `GET /api/v1/reviews/<review_id>` — Get review
+- `PUT /api/v1/reviews/<review_id>` — Update review
+- `DELETE /api/v1/reviews/<review_id>` — Delete review
 - `GET /api/v1/places/<place_id>/reviews` — Get all reviews for a place
 
 ### Amenities
 
 - `POST /api/v1/amenities/` — Create amenity
 - `GET /api/v1/amenities/` — List amenities
-- `GET /api/v1/amenities/<user_id>` — Get amenity
-- `PUT /api/v1/amenities/<user_id>` — Update amenity
+- `GET /api/v1/amenities/<amenity_id>` — Get amenity
+- `PUT /api/v1/amenities/<amenity_id>` — Update amenity
 
 ---
 
