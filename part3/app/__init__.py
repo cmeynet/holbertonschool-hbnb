@@ -14,10 +14,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     # Étape n°1 : Charger la configuration de l'application avant d'initialiser les extensions(BD...)
     app.config.from_object(config_class)
 
-    # Étape n°2 :   Initialiser ici les outils utilisés par l'application, comme la BD ou l'authentification (JWT...)
-    api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
-
-    # Étape n°3 :  Créer l’API RestX qui permettra de déclarer les routes & générer la doc automatique
+    # Étape n°2 :   Créer l'API Flask-RESTx
     api = Api(
         app,
         version="1.0",
@@ -25,7 +22,7 @@ def create_app(config_class="config.DevelopmentConfig"):
         description="HBnB Application API"
     )
 
-    # Étape n°4 : Enregistrer les namespaces pour activer les routes de chaque fonctionnalité (users, places, reviews, etc.) 
+    # Étape n°3 : Enregistrer les namespaces pour activer les routes de chaque fonctionnalité (users, places, reviews, etc.) 
 
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
