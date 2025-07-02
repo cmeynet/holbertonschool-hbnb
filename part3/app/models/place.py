@@ -3,6 +3,13 @@ from .user import User
 from app import db
 from sqlalchemy.orm import validates
 
+# Association table between place and amenity
+place_amenity = db.Table('place_amenity',
+    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
+    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
+ )
+
+
 class Place(BaseModel):
     __tablename__ = "places"
 
@@ -11,11 +18,11 @@ class Place(BaseModel):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
-    """ self.owner = owner
-    self.reviews = []  # List to store related reviews
-    self.amenities = []  # List to store related amenities """
+    reviews = db.relationship('Review', backref='place', lazy=True)
+    amenities = db.relationship('Amenity', secondary=place_amenity, backref=db.backref('places', lazy=True))
+
     
     @validates('title')
     def validate_title(self, key, value):
@@ -84,7 +91,7 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner_id': self.owner.id
+            'user_id': self.user.id
         }
     
     def to_dict_list(self):
@@ -95,7 +102,7 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'owner_id': self.owner_id(),
-            'amenities': self.amenities,
-            'reviews': self.reviews
+            'user_id': self.user_id,
+            'amenities': [amenity.to_dict() for amenity in self.amenities],
+            'reviews': [review.to_dict() for review in self.reviews]
         }

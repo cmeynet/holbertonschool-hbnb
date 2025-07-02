@@ -7,7 +7,7 @@ from app.services.repositories.user_repository import UserRepository
 from app.services.repositories.place_repository import PlaceRepository
 from app.services.repositories.review_repository import ReviewRepository
 from app.services.repositories.amenity_repository import AmenityRepository
-
+from app import db
 
 class HBnBFacade:
     def __init__(self):
@@ -52,23 +52,24 @@ class HBnBFacade:
 
     # PLACE
     def create_place(self, place_data):
-        user = self.user_repo.get_by_attribute('id', place_data['owner_id'])
+        user = self.user_repo.get_by_attribute('id', place_data['user_id'])
         if not user:
             raise KeyError('Invalid input data')
-        # del place_data['owner_id']
-        # place_data['owner'] = user
+
         amenities = place_data.pop('amenities', None)
+        
+        place = Place(**place_data)
+        self.place_repo.add(place)
+
         if amenities:
             for a in amenities:
                 amenity = self.get_amenity(a['id'])
                 if not amenity:
                     raise KeyError('Invalid input data')
-        place = Place(**place_data)
-        self.place_repo.add(place)
-        user.add_place(place)
-        if amenities:
-            for amenity in amenities:
-                place.add_amenity(amenity)
+                place.amenities.append(amenity)
+
+            db.session.commit()
+        
         return place
 
     def get_place(self, place_id):

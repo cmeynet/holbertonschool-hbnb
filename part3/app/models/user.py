@@ -11,6 +11,10 @@ class User(BaseModel):
     email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+
+    places = db.relationship('Place', backref='user', lazy=True)
+    reviews = db.relationship('Review', backref='user', lazy=True)
+
     
     @validates('first_name')
     def validate_first_name(self, key, value):
