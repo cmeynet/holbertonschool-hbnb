@@ -68,22 +68,23 @@ class User(BaseModel):
         self.__is_admin = value
 
     def add_place(self, place):
-        """Add an amenity to the place."""
+        """
+        Add an amenity to the place.
+        """
         self.places.append(place)
 
     def add_review(self, review):
-        """Add an amenity to the place."""
+        """
+        Add an amenity to the place.
+        """
         self.reviews.append(review)
 
     def delete_review(self, review):
-        """Add an amenity to the place."""
+        """
+        Add an amenity to the place.
+        """
         self.reviews.remove(review)
 
-    @property
-    def password(self):
-        return self.__password
-    
-    @password.setter
     def hash_password(self, password):
         """
         Hashes the password before storing it.
