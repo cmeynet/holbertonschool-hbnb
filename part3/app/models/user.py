@@ -11,9 +11,12 @@ class User(BaseModel):
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
+        self.hash_password(password)
+    
+    
         self.places = []
         self.reviews = []
-        self.__password = None
+        
     
     @property
     def first_name(self):
