@@ -8,7 +8,7 @@ user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email of the user'),
-    'password':   fields.String(required=True, description="Plain-text password")
+    'password': fields.String(required=True, description="Password of the user")
 })
 
 @api.route('/')
@@ -21,29 +21,36 @@ class UserList(Resource):
         """Register a new user"""
         user_data = api.payload
 
-        # Simulate email uniqueness check (to be replaced by real validation with persistence)
-        existing_user = facade.get_user_by_email(user_data['email'])
-        if existing_user:
+
+        # Vérifie si l’e-mail est déjà utilisé
+        if facade.get_user_by_email(user_data['email']):
             return {'error': 'Email already registered'}, 409
 
         try:
+            # Crée un nouvel utilisateur, le mot de passe est haché automatiquement
             new_user = facade.create_user(user_data)
-            return new_user.to_dict(), 201
-        except Exception as e:
-            return {'error': str(e)}, 400
-        
+
+            # Réponse simple : pas de mot de passe
+            return {'id': str(new_user.id), 'message': 'User created'}, 201
+
+        except Exception as error:
+            return {'error': str(error)}, 400
+
     @api.response(200, 'List of users retrieved successfully')
     def get(self):
-        """Retrieve a list of users"""
+        """
+        Get all users (without passwords).
+        """
         users = facade.get_users()
         return [user.to_dict() for user in users], 200
-    
+
+
 @api.route('/<user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
     def get(self, user_id):
-        """Get user details by ID"""
+        """Retrieve one user (no password returned)."""
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
@@ -52,8 +59,11 @@ class UserResource(Resource):
     @api.expect(user_model)
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
-    @api.response(400, 'Invalid input data')
+    @api.response(400, 'Invalid input')
     def put(self, user_id):
+        """
+        Update a user (password can be updated).
+        """
         user_data = api.payload
         user = facade.get_user(user_id)
         if not user:
@@ -61,5 +71,5 @@ class UserResource(Resource):
         try:
             facade.update_user(user_id, user_data)
             return user.to_dict(), 200
-        except Exception as e:
-            return {'error': str(e)}, 400
+        except Exception as error:
+            return {'error': str(error)}, 400
