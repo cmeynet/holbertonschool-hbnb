@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_restx import Api
+from flask_jwt_extended import JWTManager
 
 from app.extensions import bcrypt
 
@@ -8,18 +9,20 @@ from app.api.v1.amenities import api as amenities_ns
 from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 
+jwt = JWTManager()
 
 def create_app(config_class="config.DevelopmentConfig"):
     """
     Flask application factory that instantiates the app with a configuration class
     """
-    app = Flask(__name__)
-
     # Étape n°1 : Charger la configuration de l'application avant d'initialiser les extensions(BD...)
+    app = Flask(__name__)
     app.config.from_object(config_class)
+    
 
     # Étape n°2 : Initialiser Bcrypt avec l’application Flask
     bcrypt.init_app(app)
+    jwt.init_app(app) 
 
     # Étape n°3 :   Créer l'API Flask-RESTx
     api = Api(
