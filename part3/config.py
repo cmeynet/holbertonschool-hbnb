@@ -6,6 +6,7 @@ class Config:
 
 class DevelopmentConfig(Config):
     DEBUG = True
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'dev-jwt-secret')
 
 config = {
     'development': DevelopmentConfig,
