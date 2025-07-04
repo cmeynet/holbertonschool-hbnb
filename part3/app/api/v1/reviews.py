@@ -41,7 +41,7 @@ class ReviewList(Resource):
             return {'error': 'Place not found'}, 400
 
         # Impossible to value your own home
-        if place.owner_id == current_user:
+        if str(place.owner.id) == str(current_user):
             return {'error': 'User cannot review their own place'}, 400
 
         # Not possible to post a review twice on the same property
