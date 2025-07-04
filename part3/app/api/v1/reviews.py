@@ -48,7 +48,7 @@ class ReviewList(Resource):
         if facade.user_already_reviewed(current_user, place.id):
             return {'error': 'You have already reviewed this place'}, 400
 
-        # Create review
+        # For create review
         review = facade.create_review({
             **data,
             'user_id': current_user
