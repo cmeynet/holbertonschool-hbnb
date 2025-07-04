@@ -24,25 +24,44 @@ review_out_model = api.inherit('ReviewOut', review_in_model, {
 
 @api.route('/')
 class ReviewList(Resource):
-    @api.expect(review_model)
-    @api.response(201, 'Review successfully created')
-    @api.response(400, 'Invalid input data')
+    @jwt_required()
+    @api.expect(review_in_model, validate=True)
+    @api.marshal_with(review_out_model, code=201)
+    @api.response(400, 'Invalid input data or business rule violated')
     def post(self):
-        """Register a new review"""
-        review_data = api.payload
-        place = facade.get_place(review_data['place_id'])
+        """
+        Register a new review
+        """
+        current_user = get_jwt_identity()
+        data = request.get_json()
+
+        # If place must exist
+        place = facade.get_place(data['place_id'])
         if not place:
             return {'error': 'Place not found'}, 400
-        user = facade.get_user(review_data['user_id'])
-        if not user:
-            return {'error': 'User not found'}, 400
-        if place.owner.id == user.id:
+
+        # Impossible to value your own home
+        if place.owner_id == current_user:
             return {'error': 'User cannot review their own place'}, 400
-        try:
-            new_review = facade.create_review(review_data)
-            return new_review.to_dict(), 201
-        except Exception as e:
-            return {'error': str(e)}, 400
+
+        # Not possible to post a review twice on the same property
+        if facade.user_already_reviewed(current_user, place.id):
+            return {'error': 'You have already reviewed this place'}, 400
+
+        # Create review
+        review = facade.create_review({
+            **data,
+            'user_id': current_user
+        })
+        return review.to_dict(), 201
+
+    @api.marshal_list_with(review_out_model)
+    @api.response(200, 'List of reviews retrieved successfully')
+    def get(self):
+        """
+        Public: list all reviews
+        """
+        return [r.to_dict() for r in facade.get_all_reviews()], 200
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
