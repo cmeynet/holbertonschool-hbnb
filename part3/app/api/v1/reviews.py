@@ -5,13 +5,22 @@ from flask import request
 
 api = Namespace('reviews', description='Review operations')
 
-# Define the review model for input validation and documentation
-review_model = api.model('Review', {
+# Revision model defined for data validation and documentation
+
+review_in_model = api.model('ReviewIn', {
     'text': fields.String(required=True, description='Text of the review'),
-    'rating': fields.Integer(required=True, description='Rating of the place (1-5)'),
-    'user_id': fields.String(required=True, description='ID of the user'),
+    'rating': fields.Integer(
+        required=True, description='Rating of the place (1-5)', min=1, max=5
+    ),
+    # "user_id" is deliberately excluded because it is injected from JWT
     'place_id': fields.String(required=True, description='ID of the place')
 })
+
+review_out_model = api.inherit('ReviewOut', review_in_model, {
+    'id': fields.String(readonly=True, description='Review ID'),
+    'user_id': fields.String(readonly=True, description='Author ID')
+})
+
 
 @api.route('/')
 class ReviewList(Resource):
