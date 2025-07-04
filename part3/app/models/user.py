@@ -18,6 +18,8 @@ class User(BaseModel):
     
     @validates('first_name')
     def validate_first_name(self, key, value):
+        if not value.strip():
+            raise ValueError("First name must not be empty")
         if not isinstance(value, str):
             raise TypeError("First name must be a string")
         super().is_max_length('First name', value, 50)
@@ -25,6 +27,8 @@ class User(BaseModel):
 
     @validates('last_name')
     def validate_last_name(self, key, value):
+        if not value.strip():
+            raise ValueError("Last name must not be empty")
         if not isinstance(value, str):
             raise TypeError("Last name must be a string")
         super().is_max_length('Last name', value, 50)

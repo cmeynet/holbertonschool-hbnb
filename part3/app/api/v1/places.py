@@ -25,7 +25,7 @@ place_model = api.model('Place', {
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     'user_id': fields.String(required=True, description='ID of the owner'),
     'owner': fields.Nested(user_model, description='Owner details', readonly=True),
-    'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
+    #'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
 @api.route('/')
@@ -86,12 +86,13 @@ class PlaceResource(Resource):
 
 @api.route('/<place_id>/amenities')
 class PlaceAmenities(Resource):
-    @api.expect(amenity_model)
+    @api.expect([amenity_model])
     @api.response(200, 'Amenities added successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
     def post(self, place_id):
         amenities_data = api.payload
+
         if not amenities_data or len(amenities_data) == 0:
             return {'error': 'Invalid input data'}, 400
         
@@ -99,13 +100,27 @@ class PlaceAmenities(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
         
+        added_amenities = []
         for amenity in amenities_data:
-            a = facade.get_amenity(amenity['id'])
+            amenity_id = amenity.get("id")
+
+            if not amenity_id:
+                return {'error': 'Missing amenity id'}, 400
+            
+            try:
+                a = facade.get_amenity(amenity_id)
+            except Exception as e:
+                return {'error': 'Amenity lookup failed'}, 400
+            
             if not a:
-                return {'error': 'Invalid input data'}, 400
+                return {'error': f"Amenity {amenity_id} not found"}, 400
+            
+            try:
+                place.add_amenity(a)
+                added_amenities.append(amenity_id)
+            except Exception as e:
+                return {'error': f'Failed to add amenity {amenity_id}'}, 500
         
-        for amenity in amenities_data:
-            place.add_amenity(amenity)
         return {'message': 'Amenities added successfully'}, 200
 
 @api.route('/<place_id>/reviews/')

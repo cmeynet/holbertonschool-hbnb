@@ -26,7 +26,7 @@ class Place(BaseModel):
     
     @validates('title')
     def validate_title(self, key, value):
-        if not value:
+        if not value.strip():
             raise ValueError("Title cannot be empty")
         if not isinstance(value, str):
             raise TypeError("Title must be a string")
@@ -82,6 +82,7 @@ class Place(BaseModel):
     def add_amenity(self, amenity):
         """Add an amenity to the place."""
         self.amenities.append(amenity)
+        db.session.commit()
 
     def to_dict(self):
         return {
@@ -103,6 +104,6 @@ class Place(BaseModel):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'user_id': self.user_id,
-            'amenities': [amenity.to_dict() for amenity in self.amenities],
+            'amenities': [{'id': a.id, 'name': a.name} for a in self.amenities],
             'reviews': [review.to_dict() for review in self.reviews]
         }

@@ -25,7 +25,7 @@ class ReviewList(Resource):
         user = facade.get_user(review_data['user_id'])
         if not user:
             return {'error': 'User not found'}, 400
-        if place.owner.id == user.id:
+        if place.user.id == user.id:
             return {'error': 'User cannot review their own place'}, 400
         try:
             new_review = facade.create_review(review_data)
