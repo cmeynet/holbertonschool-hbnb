@@ -1,4 +1,4 @@
-from flask_restx import Namespace, Resource, fields  # ADDED: JWT protection
+from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -24,9 +24,9 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    #“owner_id” is deliberately excluded from the input template.
-    # The authenticated user ID (from JWT) is injected server-side to prevent spoofing.
-    # This prevents malicious users from submitting a location pretending to be someone else.
+    # “owner_id” is deliberately excluded from the input template
+    # The authenticated user ID (from JWT) is injected server-side to prevent spoofing
+    # This prevents malicious users from submitting a location pretending to be someone else
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
 
@@ -53,6 +53,7 @@ class PlaceList(Resource):
         """Retrieve a list of all places"""
         places = facade.get_all_places()
         return [place.to_dict() for place in places], 200
+
 
 @api.route('/<place_id>')
 class PlaceResource(Resource):
@@ -86,6 +87,7 @@ class PlaceResource(Resource):
         except Exception as e:
             return {'error': str(e)}, 400
 
+
 @api.route('/<place_id>/amenities')
 class PlaceAmenities(Resource):
     @jwt_required()
@@ -113,6 +115,7 @@ class PlaceAmenities(Resource):
         for amenity in amenities_data:
             place.add_amenity(amenity)
         return {'message': 'Amenities added successfully'}, 200
+
 
 @api.route('/<place_id>/reviews/')
 class PlaceReviewList(Resource):
