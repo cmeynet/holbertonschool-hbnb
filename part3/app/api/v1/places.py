@@ -24,7 +24,7 @@ place_model = api.model('Place', {
     'price': fields.Float(required=True, description='Price per night'),
     'latitude': fields.Float(required=True, description='Latitude of the place'),
     'longitude': fields.Float(required=True, description='Longitude of the place'),
-    # “owner_id” is deliberately excluded from the input template
+    # “owner.id” is deliberately excluded from the input template
     # The authenticated user ID (from JWT) is injected server-side to prevent spoofing
     # This prevents malicious users from submitting a location pretending to be someone else
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
@@ -78,7 +78,7 @@ class PlaceResource(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
 
-        if place.owner_id != current_user:
+        if str(place.owner.id) != str(current_user):
             return {'error': 'Unauthorized action'}, 403
 
         try:
@@ -91,13 +91,16 @@ class PlaceResource(Resource):
 @api.route('/<place_id>/amenities')
 class PlaceAmenities(Resource):
     @jwt_required()
-    @api.expect(amenity_model)
+    @api.expect(api.model('AmenityIDList', {
+        'amenities': fields.List(fields.String, required=True,
+                                 description="List of amenity IDs")
+    }), validate=True)
     @api.response(200, 'Amenities added successfully')
     @api.response(404, 'Place not found')
     @api.response(400, 'Invalid input data')
     def post(self, place_id):
-        amenities_data = api.payload
-        if not amenities_data or len(amenities_data) == 0:
+        amenity_ids = api.payload["amenities"]
+        if not amenity_ids:
             return {'error': 'Invalid input data'}, 400
 
         current_user = get_jwt_identity()
@@ -105,15 +108,13 @@ class PlaceAmenities(Resource):
         if not place:
             return {'error': 'Place not found'}, 404
 
-        if place.owner_id != current_user:
+        if str(place.owner.id) != str(current_user):
             return {'error': 'Unauthorized action'}, 403
 
-        for amenity in amenities_data:
-            if not facade.get_amenity(amenity['id']):
-                return {'error': 'Invalid input data'}, 400
-
-        for amenity in amenities_data:
-            place.add_amenity(amenity)
+        for amenity_id in amenity_ids:
+            if not facade.get_amenity(amenity_id):
+                return {'error': f'Invalid amenity ID: {amenity_id}'}, 400
+            place.add_amenity(amenity_id)
         return {'message': 'Amenities added successfully'}, 200
 
 
