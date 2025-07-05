@@ -16,6 +16,8 @@ user_update_model = api.model('UserUpdate', {
     'first_name': fields.String(description='First name of the user'),
     'last_name': fields.String(description='Last name of the user')
 })
+
+
 @api.route('/')
 class UserList(Resource):
     @api.expect(user_model, validate=True)
@@ -25,7 +27,6 @@ class UserList(Resource):
     def post(self):
         """Register a new user"""
         user_data = api.payload
-
 
         # Vérifie si l’e-mail est déjà utilisé
         if facade.get_user_by_email(user_data['email']):
