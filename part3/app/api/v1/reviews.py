@@ -43,10 +43,7 @@ class ReviewList(Resource):
             return {'error': 'You have already reviewed this place'}, 400 # 2nd code required by the instructions
 
         # For create review
-        review = facade.create_review({
-            **data,
-            'user_id': current_user
-        })
+        review = facade.create_review(current_user, data)
         return review.to_dict(), 201
     
 
@@ -82,7 +79,7 @@ class ReviewResource(Resource):
         if not review:
             return {'error': 'Review not found'}, 404
 
-        if str(review.user_id) != str(current_user):
+        if str(review.user.id) != str(current_user):
             return {'error': 'Unauthorized action'}, 403
 
         payload = request.get_json()
@@ -102,8 +99,8 @@ class ReviewResource(Resource):
         if not review:
             return {'error': 'Review not found'}, 404
 
-        if str(review.user_id) != str(current_user):
+        if str(review.user.id) != str(current_user):
             return {'error': 'Unauthorized action'}, 403
 
         facade.delete_review(review_id)
-        return '', 204
+        return {'message': 'Review deleted successfully'}, 204
