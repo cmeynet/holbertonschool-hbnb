@@ -23,8 +23,7 @@ class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User created with success')
     @api.response(409, 'Email already registered')
-    @api.response(400, 'You cannot modify email or password.') # 1st code required in this instruction !
-    @api.response(403,'Unauthorized action') # 2nd code required in this instruction
+    @api.response(400, 'Input data invalid')
     def post(self):
         """Register a new user"""
         user_data = api.payload
@@ -63,24 +62,26 @@ class UserResource(Resource):
             return {'error': 'User not found'}, 404
         return user.to_dict(), 200
 
-    @api.expect(user_update_model, validate=True)
     @jwt_required()
+    @api.expect(user_update_model, validate=True)
     @api.response(200, 'User updated successfully')
-    @api.response(403, 'Unauthorized action')
     @api.response(404, 'User not found')
-    @api.response(400, 'Invalid input')
+    @api.response(400, 'You cannot modify email or password.')  # 1st code required by the instructions
+    @api.response(403, 'Unauthorized action') # 2nd code required by the instructions
     def put(self, user_id):
         current_user = get_jwt_identity()
         if str(current_user) != str(user_id):
             return {'error': 'Unauthorized action'}, 403
 
-        user_data = api.payload or {}
+        payload = api.payload or {}
+
+        if 'email' in payload or 'password' in payload:
+            return {'error': 'You cannot modify email or password'}, 400
+
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-
-        try:
-            updated = facade.update_user(user_id, user_data)
-            return updated.to_dict(), 200
-        except Exception as error:
-            return {'error': str(error)}, 400
+        
+        updated = facade.update_user(user_id, payload)
+        return updated.to_dict(), 200
+    
