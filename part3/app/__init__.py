@@ -3,6 +3,7 @@ from flask_restx import Api
 from flask_jwt_extended import JWTManager
 
 from app.extensions import bcrypt
+from config import DevelopmentConfig
 
 from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
