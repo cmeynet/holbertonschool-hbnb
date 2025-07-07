@@ -28,13 +28,13 @@ class HBnBFacade:
     
     def update_user(self, current_user_id, user_id, user_data):
         """
-        - Only the logged-in user can modify his profile.
-        - Sensitive fields (email, password) are protected.
+        Only the logged-in user can modify his profile.
+        Sensitive fields (email, password) are protected.
         """
         if current_user_id != user_id:
             raise PermissionError("Unauthorized action")
-        
-    # FIX: protection champs email/password
+
+        # FIX : protection champs email/password
         forbidden_fields = {"email", "password"}
         if forbidden_fields.intersection(user_data):
             raise ValueError("You cannot modify email or password")
