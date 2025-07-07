@@ -13,6 +13,7 @@ from app.api.v1.protected import api as protected_ns
 
 jwt = JWTManager()
 
+
 def create_app(config_class="config.DevelopmentConfig"):
     """
     Flask application factory that instantiates the app with a configuration class
@@ -20,13 +21,12 @@ def create_app(config_class="config.DevelopmentConfig"):
     # Step 1: Load application configuration before initializing extensions(BD...)
     app = Flask(__name__)
     app.config.from_object(config_class)
-    
 
     # Step 2: Initialize Bcrypt with the Flask application
     bcrypt.init_app(app)
-    jwt.init_app(app) 
+    jwt.init_app(app)
 
-    # Étape n°3 :   Créer l'API Flask-RESTx
+    # Step 3: Create the Flask-RESTx API
     api = Api(
         app,
         version="1.0",
@@ -34,7 +34,7 @@ def create_app(config_class="config.DevelopmentConfig"):
         description="HBnB Application API"
     )
 
-    # Étape n°4 : Enregistrer les namespaces pour activer les routes de chaque fonctionnalité (users, places, reviews, etc.) 
+    # Step 4: Register namespaces to activate routes for each feature (users, places, reviews, etc.)
 
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
