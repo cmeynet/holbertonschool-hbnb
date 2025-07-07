@@ -18,7 +18,7 @@ user_model = api.model('PlaceUser', {
     'email': fields.String(description='Email of the owner')
 })
 
-place_model = api.model('Place', {
+place_create_model = api.model('Place', {
     'title': fields.String(required=True, description='Title of the place'),
     'description': fields.String(description='Description of the place'),
     'price': fields.Float(required=True, description='Price per night'),
@@ -26,9 +26,23 @@ place_model = api.model('Place', {
     'longitude': fields.Float(required=True, description='Longitude of the place'),
     # “owner.id” is deliberately excluded from the input template
     # The authenticated user ID (from JWT) is injected server-side to prevent spoofing
-    # This prevents malicious users from submitting a location pretending to be someone else
     'amenities': fields.List(fields.String, required=True, description="List of amenities ID's")
 })
+
+place_update_model = api.model(
+    "PlaceUpdate",
+    {
+        "title": fields.String(description="Title of the place"),
+        "description": fields.String(description="Description of the place"),
+        "price": fields.Float(description="Price per night"),
+        "latitude": fields.Float(description="Latitude"),
+        "longitude": fields.Float(description="Longitude"),
+        "amenities": fields.List(
+            fields.String, description="List of amenity IDs"
+        ),
+    },
+)
+
 
 
 @api.route('/')
