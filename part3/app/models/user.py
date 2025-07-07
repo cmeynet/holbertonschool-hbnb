@@ -58,6 +58,16 @@ class User(BaseModel):
         User.emails.add(value)
 
     @property
+    def password(self):
+        return self.__password
+    
+    @password.setter
+    def password(self, value):
+        if not isinstance(value, str):
+            raise TypeError("Password must be a string")
+        self.__password = self.hash_password(value)
+
+    @property
     def is_admin(self):
         return self.__is_admin
     
@@ -69,19 +79,19 @@ class User(BaseModel):
 
     def add_place(self, place):
         """
-        Add an amenity to the place.
+        Add a place
         """
         self.places.append(place)
 
     def add_review(self, review):
         """
-        Add an amenity to the place.
+        Add a new review
         """
         self.reviews.append(review)
 
     def delete_review(self, review):
         """
-        Add an amenity to the place.
+        Delete a review
         """
         self.reviews.remove(review)
 
@@ -89,7 +99,7 @@ class User(BaseModel):
         """
         Hashes the password before storing it.
         """
-        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        return bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
         """
@@ -103,5 +113,5 @@ class User(BaseModel):
             'first_name': self.first_name,
             'last_name': self.last_name,
             'email': self.email
-            # password pas inclus pour raison sécurité !!
+            # password not include for security reasons
         }
