@@ -125,7 +125,12 @@ class HBnBFacade:
         if self.user_already_reviewed(current_user_id, place.id):
             raise ValueError("You have already reviewed this place")
 
-        review = Review(user=user, place=place, text=review_data["text"])
+        review = Review(
+            review_data["text"],
+            review_data["rating"],
+            place,
+            user
+            )
         self.review_repo.add(review)
         user.add_review(review)
         place.add_review(review)
