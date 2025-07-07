@@ -16,17 +16,11 @@ review_in_model = api.model('ReviewIn', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
-review_out_model = api.inherit('ReviewOut', review_in_model, {
-    'id': fields.String(readonly=True, description='Review ID'),
-    'user_id': fields.String(readonly=True, description='Author ID')
-})
-
-
 @api.route('/')
 class ReviewList(Resource):
     @jwt_required()
     @api.expect(review_in_model, validate=True)
-    @api.marshal_with(review_out_model, code=201)
+    @api.response(201, "Review is created")
     @api.response(400, 'Invalid input data or business rule violated')
     def post(self):
         """
@@ -42,11 +36,11 @@ class ReviewList(Resource):
 
         # Impossible to value your own home
         if str(place.owner.id) == str(current_user):
-            return {'error': 'User cannot review their own place'}, 400
+            return {'error': 'You cannot review your own place.'}, 400 # 1st code required by the instructions
 
         # Not possible to post a review twice on the same property
         if facade.user_already_reviewed(current_user, place.id):
-            return {'error': 'You have already reviewed this place'}, 400
+            return {'error': 'You have already reviewed this place'}, 400 # 2nd code required by the instructions
 
         # For create review
         review = facade.create_review({
@@ -54,8 +48,8 @@ class ReviewList(Resource):
             'user_id': current_user
         })
         return review.to_dict(), 201
+    
 
-    @api.marshal_list_with(review_out_model)
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
         """
@@ -66,7 +60,6 @@ class ReviewList(Resource):
 
 @api.route('/<review_id>')
 class ReviewResource(Resource):
-    @api.marshal_with(review_out_model)
     @api.response(404, 'Review not found')
     def get(self, review_id):
         """Public: get one review by ID"""
@@ -78,7 +71,7 @@ class ReviewResource(Resource):
     @jwt_required()
     @api.expect(review_in_model, validate=True)
     @api.response(200, 'Review updated successfully')
-    @api.response(403, 'Unauthorized action')
+    @api.response(403, 'Unauthorized action') #3rd code required by the instruction!
     @api.response(404, 'Review not found')
     def put(self, review_id):
         """
