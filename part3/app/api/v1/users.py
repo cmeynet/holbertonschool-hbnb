@@ -23,8 +23,8 @@ class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User created with success')
     @api.response(409, 'Email already registered')
-    @api.response(400, 'Invalid input data')
-    @api.response(403,'Unauthorized action')
+    @api.response(400, 'You cannot modify email or password.') # 1st code required in this instruction !
+    @api.response(403,'Unauthorized action') # 2nd code required in this instruction
     def post(self):
         """Register a new user"""
         user_data = api.payload
