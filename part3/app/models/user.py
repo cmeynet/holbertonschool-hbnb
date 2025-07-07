@@ -12,7 +12,7 @@ class User(BaseModel):
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    places = db.relationship('Place', backref='user', lazy=True)
+    places = db.relationship('Place', backref='owner', lazy=True)
     reviews = db.relationship('Review', backref='user', lazy=True)
 
     
@@ -49,7 +49,8 @@ class User(BaseModel):
         
     # @validates('password')
     # def validate_password(self, key, value):
-
+    #   if not value.strip():
+    #        raise ValueError("Password must not be empty")
 
     @validates('is_admin')
     def validate_is_admin(self, key, value):

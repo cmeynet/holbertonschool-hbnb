@@ -18,7 +18,8 @@ class Place(BaseModel):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    owner_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    # owner = db.relationship('User')
 
     reviews = db.relationship('Review', backref='place', lazy=True)
     amenities = db.relationship('Amenity', secondary=place_amenity, backref=db.backref('places', lazy=True))
@@ -92,7 +93,7 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'user_id': self.user.id
+            'owner_id': self.owner.id
         }
     
     def to_dict_list(self):
@@ -103,7 +104,13 @@ class Place(BaseModel):
             'price': self.price,
             'latitude': self.latitude,
             'longitude': self.longitude,
-            'user_id': self.user_id,
+            'owner_id': self.owner_id,
+            'owner': {
+                'id': self.owner.id,
+                'first_name': self.owner.first_name,
+                'last_name': self.owner.last_name,
+                'email': self.owner.email
+            },
             'amenities': [{'id': a.id, 'name': a.name} for a in self.amenities],
             'reviews': [review.to_dict() for review in self.reviews]
         }
