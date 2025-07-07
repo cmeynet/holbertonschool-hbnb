@@ -26,9 +26,22 @@ class HBnBFacade:
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
     
-    def update_user(self, user_id, user_data):
+    def update_user(self, current_user_id, user_id, user_data):
+        """
+        - Only the logged-in user can modify his profile.
+        - Sensitive fields (email, password) are protected.
+        """
+        if current_user_id != user_id:
+            raise PermissionError("Unauthorized action")
+        
+    # FIX: protection champs email/password
+        forbidden_fields = {"email", "password"}
+        if forbidden_fields.intersection(user_data):
+            raise ValueError("You cannot modify email or password")
+
         self.user_repo.update(user_id, user_data)
-    
+        return self.get_user(user_id)
+
     # AMENITY
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)
@@ -45,24 +58,29 @@ class HBnBFacade:
         self.amenity_repo.update(amenity_id, amenity_data)
 
     # PLACE
-    def create_place(self, place_data):
-        user = self.user_repo.get_by_attribute('id', place_data['owner_id'])
+    def create_place(self, current_user_id, place_data):
+        """POST /places/ : le propriétaire est forcé à current_user_id."""
+        user = self.get_user(current_user_id)
         if not user:
-            raise KeyError('Invalid input data')
-        del place_data['owner_id']
-        place_data['owner'] = user
-        amenities = place_data.pop('amenities', None)
-        if amenities:
-            for a in amenities:
-                amenity = self.get_amenity(a['id'])
-                if not amenity:
-                    raise KeyError('Invalid input data')
-        place = Place(**place_data)
+            raise KeyError("User not found")
+
+        # owner_id from the client is completely ignored
+        place_data.pop("owner_id", None)
+
+        amenities_payload = place_data.pop("amenities", None)
+
+        place = Place(owner=user, **place_data)
         self.place_repo.add(place)
         user.add_place(place)
-        if amenities:
-            for amenity in amenities:
+
+        # connects existing amenities
+        if amenities_payload:
+            for item in amenities_payload:
+                amenity = self.get_amenity(item["id"])
+                if not amenity:
+                    raise KeyError("Invalid amenity id")
                 place.add_amenity(amenity)
+
         return place
 
     def get_place(self, place_id):
@@ -71,29 +89,52 @@ class HBnBFacade:
     def get_all_places(self):
         return self.place_repo.get_all()
 
-    def update_place(self, place_id, place_data):
+    def update_place(self, current_user_id, place_id, place_data):
+        """
+        check ownership and update
+        """
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise KeyError("Place not found")
+
+        # ownership control added
+        if place.owner.id != current_user_id:
+            raise PermissionError("Unauthorized action")
+
+        # Protect unmodifiable fields
+        for k in ("owner", "owner_id", "id"):
+            place_data.pop(k, None)
+
         self.place_repo.update(place_id, place_data)
+        return place
+
 
     # REVIEWS
-    def create_review(self, review_data):
-        user = self.user_repo.get(review_data['user_id'])
+    def create_review(self, current_user_id, review_data):
+        user = self.get_user(current_user_id)
         if not user:
-            raise KeyError('Invalid input data')
-        del review_data['user_id']
-        review_data['user'] = user
-        
-        place = self.place_repo.get(review_data['place_id'])
-        if not place:
-            raise KeyError('Invalid input data')
-        del review_data['place_id']
-        review_data['place'] = place
+            raise KeyError("User not found")
 
-        review = Review(**review_data)
+        place = self.place_repo.get(review_data["place_id"])
+        if not place:
+            raise KeyError("Place not found")
+
+        if place.owner.id == current_user_id:
+            raise ValueError("You cannot review your own place")
+
+        duplicate = next(
+            (r for r in self.review_repo.get_all() if r.user.id == current_user_id and r.place.id == place.id),
+            None,
+        )
+        if duplicate:
+            raise ValueError("You have already reviewed this place")
+
+        review = Review(user=user, place=place, text=review_data["text"])
         self.review_repo.add(review)
         user.add_review(review)
         place.add_review(review)
         return review
-        
+
     def get_review(self, review_id):
         return self.review_repo.get(review_id)
 
@@ -103,17 +144,32 @@ class HBnBFacade:
     def get_reviews_by_place(self, place_id):
         place = self.place_repo.get(place_id)
         if not place:
-            raise KeyError('Place not found')
+            raise KeyError("Place not found")
         return place.reviews
 
-    def update_review(self, review_id, review_data):
-        self.review_repo.update(review_id, review_data)
-
-    def delete_review(self, review_id):
+    def update_review(self, current_user_id, review_id, review_data):
         review = self.review_repo.get(review_id)
-        
-        user = self.user_repo.get(review.user.id)
-        place = self.place_repo.get(review.place.id)
+        if not review:
+            raise KeyError("Review not found")
+
+        if review.user.id != current_user_id:
+            raise PermissionError("Unauthorized action")
+
+        review_data.pop("user_id", None)
+        review_data.pop("place_id", None)
+        self.review_repo.update(review_id, review_data)
+        return review
+
+    def delete_review(self, current_user_id, review_id):
+        review = self.review_repo.get(review_id)
+        if not review:
+            raise KeyError("Review not found")
+
+        if review.user.id != current_user_id:
+            raise PermissionError("Unauthorized action")
+
+        user = review.user
+        place = review.place
 
         user.delete_review(review)
         place.delete_review(review)
