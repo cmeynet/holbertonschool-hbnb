@@ -121,12 +121,8 @@ class HBnBFacade:
 
         if place.owner.id == current_user_id:
             raise ValueError("You cannot review your own place")
-
-        duplicate = next(
-            (r for r in self.review_repo.get_all() if r.user.id == current_user_id and r.place.id == place.id),
-            None,
-        )
-        if duplicate:
+        
+        if self.user_already_reviewed(current_user_id, place.id):
             raise ValueError("You have already reviewed this place")
 
         review = Review(user=user, place=place, text=review_data["text"])
@@ -174,3 +170,13 @@ class HBnBFacade:
         user.delete_review(review)
         place.delete_review(review)
         self.review_repo.delete(review_id)
+
+    def user_already_reviewed(self, user_id: str, place_id: str) -> bool:
+        """
+        Return True if user user has already left a review on this place
+        """
+        return any(
+            r.user.id == user_id and r.place.id == place_id
+            for r in self.review_repo.get_all()
+            )
+
