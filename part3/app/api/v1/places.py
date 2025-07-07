@@ -59,19 +59,21 @@ class PlaceList(Resource):
     @api.response(400, "Bad request")
     @api.response(404, "User or amenity not found")
     def post(self):
-        """Create a new place — authenticated user becomes owner"""
+        """
+        Create a new place — authenticated user becomes owner
+        """
         current_user_id = get_jwt_identity()
         payload = api.payload
 
         try:
             place = facade.create_place(current_user_id, payload)
             return place.to_dict(), 201
-        except PermissionError as e:
-            return {"error": str(e)}, 403
-        except KeyError as e:
-            return {"error": str(e)}, 404
-        except ValueError as e:
-            return {"error": str(e)}, 400
+        except PermissionError as error:
+            return {"error": str(error)}, 403
+        except KeyError as error:
+            return {"error": str(error)}, 404
+        except ValueError as error:
+            return {"error": str(error)}, 400
 
     @api.response(200, "List of places retrieved successfully")
     def get(self):
@@ -94,8 +96,8 @@ class PlaceResource(Resource):
     @jwt_required()
     @api.expect(place_update_model, validate=True)
     @api.response(200, "Place updated successfully")
+    @api.response(403, "Unauthorized action") # the only code required by the instructions
     @api.response(400, "Bad request")
-    @api.response(403, "Unauthorized action")
     @api.response(404, "Place not found")
     def put(self, place_id):
         """Owner‑only: update a place"""
@@ -104,12 +106,12 @@ class PlaceResource(Resource):
         try:
             place = facade.update_place(current_user_id, place_id, payload)
             return place.to_dict(), 200
-        except PermissionError as e:
-            return {"error": str(e)}, 403
-        except KeyError as e:
-            return {"error": str(e)}, 404
-        except ValueError as e:
-            return {"error": str(e)}, 400
+        except PermissionError as error:
+            return {"error": str(error)}, 403
+        except KeyError as error:
+            return {"error": str(error)}, 404
+        except ValueError as error:
+            return {"error": str(error)}, 400
 
 @api.route("/<place_id>/amenities")
 class PlaceAmenities(Resource):
@@ -144,12 +146,12 @@ class PlaceAmenities(Resource):
                     raise KeyError(f"Amenity not found: {aid}")
                 place.add_amenity(amenity)
             return {"message": "Amenities added successfully"}, 200
-        except PermissionError as e:
-            return {"error": str(e)}, 403
-        except KeyError as e:
-            return {"error": str(e)}, 404
-        except ValueError as e:
-            return {"error": str(e)}, 400
+        except PermissionError as error:
+            return {"error": str(error)}, 403
+        except KeyError as error:
+            return {"error": str(error)}, 404
+        except ValueError as error:
+            return {"error": str(error)}, 400
 
 
 @api.route("/<place_id>/reviews")
