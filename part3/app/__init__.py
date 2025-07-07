@@ -17,12 +17,12 @@ def create_app(config_class="config.DevelopmentConfig"):
     """
     Flask application factory that instantiates the app with a configuration class
     """
-    # Étape n°1 : Charger la configuration de l'application avant d'initialiser les extensions(BD...)
+    # Step 1: Load application configuration before initializing extensions(BD...)
     app = Flask(__name__)
     app.config.from_object(config_class)
     
 
-    # Étape n°2 : Initialiser Bcrypt avec l’application Flask
+    # Step 2: Initialize Bcrypt with the Flask application
     bcrypt.init_app(app)
     jwt.init_app(app) 
 
