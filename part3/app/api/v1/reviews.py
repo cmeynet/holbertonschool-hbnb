@@ -21,6 +21,7 @@ review_update_model = api.model('ReviewUpdate', {
     'rating': fields.Integer(description='Updated rating', min=1, max=5)
 })
 
+
 @api.route('/')
 class ReviewList(Resource):
     @jwt_required()
@@ -37,20 +38,19 @@ class ReviewList(Resource):
         # If place must exist
         place = facade.get_place(data['place_id'])
         if not place:
-            return {'error': 'Place not found'}, 400
+            return {'error': 'Place not found'}, 404
 
         # Impossible to value your own home
         if str(place.owner.id) == str(current_user):
-            return {'error': 'You cannot review your own place.'}, 400 # 1st code required by the instructions
+            return {'error': 'You cannot review your own place.'}, 400  # 1st code required by the instructions
 
-        # Not possible to post a review twice on the same property
+        # Not possible to post a review a 2nd time the same property
         if facade.user_already_reviewed(current_user, place.id):
-            return {'error': 'You have already reviewed this place'}, 400 # 2nd code required by the instructions
+            return {'error': 'You have already reviewed this place'}, 400  # 2nd code required by the instructions
 
         # For create review
         review = facade.create_review(current_user, data)
         return review.to_dict(), 201
-    
 
     @api.response(200, 'List of reviews retrieved successfully')
     def get(self):
@@ -73,7 +73,7 @@ class ReviewResource(Resource):
     @jwt_required()
     @api.expect(review_update_model, validate=True)
     @api.response(200, 'Review updated successfully')
-    @api.response(403, 'Unauthorized action') #3rd code required by the instruction!
+    @api.response(403, 'Unauthorized action')  # 3rd code required by the instruction!
     @api.response(404, 'Review not found')
     def put(self, review_id):
         """
