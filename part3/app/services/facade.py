@@ -167,12 +167,15 @@ class HBnBFacade:
         self.review_repo.update(review_id, review_data)
         return review
 
-    def delete_review(self, current_user_id, review_id):
+    def delete_review(self, current_user_id, review_id, is_admin=False):
+        """
+        Delete a review : only author can delete + administrator
+        """
         review = self.review_repo.get(review_id)
         if not review:
             raise KeyError("Review not found")
 
-        if review.user.id != current_user_id:
+        if not is_admin and str(review.user.id) != str(current_user_id):
             raise PermissionError("Unauthorized action")
 
         user = review.user
