@@ -12,6 +12,7 @@ from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
 from app.api.v1.protected import api as protected_ns
 from app.api.v1.admin_user import api as admin_users_ns
+from app.api.v1.admin_amenity import api as admin_amenity_ns
 
 jwt = JWTManager()
 
@@ -45,4 +46,5 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(protected_ns, path='/api/v1')
     api.add_namespace(auth_ns, path="/api/v1/auth")
     api.add_namespace(admin_users_ns, path='/api/v1/admin/users')
+    api.add_namespace(admin_amenity_ns, path='/api/v1/admin/amenities')
     return app
