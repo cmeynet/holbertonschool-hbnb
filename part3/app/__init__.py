@@ -11,17 +11,16 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
 from app.api.v1.protected import api as protected_ns
-from app.api.v1.admin_user import api as admin_users_ns
-from app.api.v1.admin_amenity import api as admin_amenity_ns
 
 jwt = JWTManager()
 
 
 def create_app(config_class="config.DevelopmentConfig"):
     """
-    Flask application factory that instantiates the app with a configuration class
+    Flask application factory that instantiates
+    the app with a configuration class
     """
-    # Step 1: Load application configuration before initializing extensions(BD...)
+    # 1: Load application configuration before initializing extensions(BD...)
     app = Flask(__name__)
     app.config.from_object(config_class)
 
@@ -37,7 +36,7 @@ def create_app(config_class="config.DevelopmentConfig"):
         description="HBnB Application API"
     )
 
-    # Step 4: Register namespaces to activate routes for each feature (users, places, reviews, etc.)
+    # 4: Register namespaces to activate routesfor each feature(exusers/places)
 
     api.add_namespace(users_ns, path='/api/v1/users')
     api.add_namespace(amenities_ns, path='/api/v1/amenities')
@@ -45,6 +44,4 @@ def create_app(config_class="config.DevelopmentConfig"):
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(protected_ns, path='/api/v1')
     api.add_namespace(auth_ns, path="/api/v1/auth")
-    api.add_namespace(admin_users_ns, path='/api/v1/admin/users')
-    api.add_namespace(admin_amenity_ns, path='/api/v1/admin/amenities')
     return app
