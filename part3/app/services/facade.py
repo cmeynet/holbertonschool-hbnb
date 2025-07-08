@@ -90,19 +90,19 @@ class HBnBFacade:
     def get_all_places(self):
         return self.place_repo.get_all()
 
-    def update_place(self, current_user_id, place_id, place_data):
+    def update_place(self, current_user_id, place_id, place_data, is_admin=False):
         """
-        check ownership and update
+        Only owner can modifiate + if is_admin=True.
         """
         place = self.place_repo.get(place_id)
         if not place:
             raise KeyError("Place not found")
 
-        # ownership control added
-        if place.owner.id != current_user_id:
+        # Contrôle de propriété (on saute si admin)
+        if not is_admin and str(place.owner.id) != str(current_user_id):
             raise PermissionError("Unauthorized action")
 
-        # Protect unmodifiable fields
+        # Champs protégés
         for k in ("owner", "owner_id", "id"):
             place_data.pop(k, None)
 
