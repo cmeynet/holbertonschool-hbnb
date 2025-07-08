@@ -124,7 +124,8 @@ class PlaceResource(Resource):
         if not is_admin and str(place.owner.id) != str(current_user_id):
             return {"error": "Unauthorized action"}, 403
         try:
-            updated = facade.update_place(current_user_id, place_id, payload)
+            updated = facade.update_place(
+                current_user_id, place_id, payload, is_admin=is_admin)
             return updated.to_dict(), 200
         except ValueError as err:
             return {"error": str(err)}, 400
