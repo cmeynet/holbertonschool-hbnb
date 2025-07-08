@@ -60,7 +60,7 @@ class PlaceList(Resource):
     @api.response(404, "User or amenity not found")
     def post(self):
         """
-        Create a new place — authenticated user becomes owner
+        Create a new place : authenticated user becomes owner of the place !
         """
         current_user_id = get_jwt_identity()
         payload = api.payload
@@ -77,7 +77,9 @@ class PlaceList(Resource):
 
     @api.response(200, "List of places retrieved successfully")
     def get(self):
-        """Public: list all places"""
+        """
+        Public: list all places
+        """
         places = facade.get_all_places()
         return [{"id": p.id, "title": p.title, "price": p.price} for p in places], 200
 
@@ -98,14 +100,13 @@ class PlaceResource(Resource):
             "price": place.price,
             "latitude": place.latitude,
             "longitude": place.longitude,
-            "owner": { "id": place.owner.id }
+            "owner": {"id": place.owner.id}
             }, 200
-
 
     @jwt_required()
     @api.expect(place_update_model, validate=True)
     @api.response(200, "Place updated successfully")
-    @api.response(403, "Unauthorized action") # the only code required by the instructions
+    @api.response(403, "Unauthorized action")  # the only code required by the instructions
     @api.response(400, "Bad request")
     @api.response(404, "Place not found")
     def put(self, place_id):
@@ -113,7 +114,7 @@ class PlaceResource(Resource):
         Owner or admin: update a place
         """
         current_user_id = get_jwt_identity()
-        is_admin = get_jwt().get("is_admin", False) 
+        is_admin = get_jwt().get("is_admin", False)
         payload = api.payload
 
         place = facade.get_place(place_id)
@@ -127,6 +128,7 @@ class PlaceResource(Resource):
             return updated.to_dict(), 200
         except ValueError as err:
             return {"error": str(err)}, 400
+
 
 @api.route("/<place_id>/amenities")
 class PlaceAmenities(Resource):
