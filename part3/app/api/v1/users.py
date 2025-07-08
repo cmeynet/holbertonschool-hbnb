@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 api = Namespace('users', description='User operations')
 
@@ -20,6 +20,7 @@ user_update_model = api.model('UserUpdate', {
 
 @api.route('/')
 class UserList(Resource):
+    @jwt_required(optional=True)
     @api.expect(user_model, validate=True)
     @api.response(201, 'User created with success')
     @api.response(409, 'Email already registered')
@@ -27,6 +28,12 @@ class UserList(Resource):
     def post(self):
         """Register a new user"""
         user_data = api.payload
+        data_is_admin = user_data.get('is_admin', None)
+        if data_is_admin:
+            current_user = get_jwt()
+            print(current_user)
+            if current_user == {} or current_user['is_admin'] is False:
+                return {'error': 'Admin privileges required'}, 403
 
         # Vérifie si l’e-mail est déjà utilisé
         if facade.get_user_by_email(user_data['email']):
@@ -70,12 +77,13 @@ class UserResource(Resource):
     @api.response(403, 'Unauthorized action') # 2nd code required by the instructions
     def put(self, user_id):
         current_user = get_jwt_identity()
-        if str(current_user) != str(user_id):
+        is_admin = get_jwt()['is_admin']
+        if str(current_user) != str(user_id) and is_admin is False:
             return {'error': 'Unauthorized action'}, 403
 
         payload = api.payload or {}
 
-        if 'email' in payload or 'password' in payload:
+        if ('email' in payload or 'password' in payload) and is_admin is False:
             return {'error': 'You cannot modify email or password'}, 400
 
         user = facade.get_user(user_id)
