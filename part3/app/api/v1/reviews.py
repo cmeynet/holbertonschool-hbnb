@@ -107,5 +107,5 @@ class ReviewResource(Resource):
         if str(review.user.id) != str(current_user):
             return {'error': 'Unauthorized action'}, 403
 
-        facade.delete_review(review_id)
+        facade.delete_review(current_user, review_id)
         return {'message': 'Review deleted successfully'}, 204
