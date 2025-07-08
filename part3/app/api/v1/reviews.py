@@ -91,7 +91,8 @@ class ReviewResource(Resource):
         payload = request.get_json()
         # user_id & place_id must not be altered
         payload.pop('place_id', None)
-        facade.update_review(current_user, review_id, payload)
+        facade.update_review(
+            current_user, review_id, payload, is_admin=is_admin)
         return review.to_dict(), 200
 
     @jwt_required()
@@ -109,5 +110,6 @@ class ReviewResource(Resource):
         if not is_admin and str(review.user.id) != str(current_user):
             return {'error': 'Unauthorized action'}, 403
 
-        facade.delete_review(current_user, review_id)
+        facade.delete_review(
+            current_user, review_id, is_admin=is_admin)
         return {'message': 'Review deleted successfully'}, 204
