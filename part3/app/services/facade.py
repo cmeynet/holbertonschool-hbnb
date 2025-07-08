@@ -56,6 +56,7 @@ class HBnBFacade:
 
     def update_amenity(self, amenity_id, amenity_data):
         self.amenity_repo.update(amenity_id, amenity_data)
+        return self.get_amenity(amenity_id)
 
     # PLACE
     def create_place(self, current_user_id, place_data):
