@@ -1,6 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 api = Namespace("places", description="Place operations")
 
@@ -109,18 +109,24 @@ class PlaceResource(Resource):
     @api.response(400, "Bad request")
     @api.response(404, "Place not found")
     def put(self, place_id):
-        """Owner‑only: update a place"""
+        """
+        Owner or admin: update a place
+        """
         current_user_id = get_jwt_identity()
+        is_admin = get_jwt().get("is_admin", False) 
         payload = api.payload
+
+        place = facade.get_place(place_id)
+        if not place:
+            return {"error": "Place not found"}, 404
+
+        if not is_admin and str(place.owner.id) != str(current_user_id):
+            return {"error": "Unauthorized action"}, 403
         try:
-            place = facade.update_place(current_user_id, place_id, payload)
-            return place.to_dict(), 200
-        except PermissionError as error:
-            return {"error": str(error)}, 403
-        except KeyError as error:
-            return {"error": str(error)}, 404
-        except ValueError as error:
-            return {"error": str(error)}, 400
+            updated = facade.update_place(current_user_id, place_id, payload)
+            return updated.to_dict(), 200
+        except ValueError as err:
+            return {"error": str(err)}, 400
 
 @api.route("/<place_id>/amenities")
 class PlaceAmenities(Resource):
@@ -141,13 +147,14 @@ class PlaceAmenities(Resource):
     @api.response(404, "Place or amenity not found")
     def post(self, place_id):
         current_user_id = get_jwt_identity()
+        is_admin = get_jwt().get("is_admin", False)
         amenity_ids = api.payload.get("amenities", [])
         try:
             place = facade.get_place(place_id)
             if not place:
                 raise KeyError("Place not found")
-            if place.owner.id != current_user_id:
-                raise PermissionError("Unauthorized action")
+            if not is_admin and str(place.owner.id) != str(current_user_id):
+                return {"error": "Unauthorized action"}, 403
 
             for aid in amenity_ids:
                 amenity = facade.get_amenity(aid)
@@ -155,8 +162,6 @@ class PlaceAmenities(Resource):
                     raise KeyError(f"Amenity not found: {aid}")
                 place.add_amenity(amenity)
             return {"message": "Amenities added successfully"}, 200
-        except PermissionError as error:
-            return {"error": str(error)}, 403
         except KeyError as error:
             return {"error": str(error)}, 404
         except ValueError as error:
