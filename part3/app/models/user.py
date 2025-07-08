@@ -2,6 +2,7 @@ from .basemodel import BaseModel
 from app.extensions import bcrypt
 import re
 
+
 class User(BaseModel):
     emails = set()
 
@@ -12,16 +13,14 @@ class User(BaseModel):
         self.email = email
         self.is_admin = is_admin
         self.password = password
-    
-    
+
         self.places = []
         self.reviews = []
-        
-    
+
     @property
     def first_name(self):
         return self.__first_name
-    
+
     @first_name.setter
     def first_name(self, value):
         if not isinstance(value, str):
@@ -60,7 +59,7 @@ class User(BaseModel):
     @property
     def password(self):
         return self.__password
-    
+
     @password.setter
     def password(self, value):
         if not isinstance(value, str):
@@ -70,7 +69,7 @@ class User(BaseModel):
     @property
     def is_admin(self):
         return self.__is_admin
-    
+
     @is_admin.setter
     def is_admin(self, value):
         if not isinstance(value, bool):
@@ -106,7 +105,7 @@ class User(BaseModel):
         Verifies if the provided password matches the hashed password.
         """
         return bcrypt.check_password_hash(self.password, password)
-    
+
     def to_dict(self):
         return {
             'id': self.id,
