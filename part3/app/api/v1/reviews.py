@@ -16,6 +16,11 @@ review_in_model = api.model('ReviewIn', {
     'place_id': fields.String(required=True, description='ID of the place')
 })
 
+review_update_model = api.model('ReviewUpdate', {
+    'text': fields.String(description='Updated text'),
+    'rating': fields.Integer(description='Updated rating', min=1, max=5)
+})
+
 @api.route('/')
 class ReviewList(Resource):
     @jwt_required()
@@ -66,7 +71,7 @@ class ReviewResource(Resource):
         return review.to_dict()
 
     @jwt_required()
-    @api.expect(review_in_model, validate=True)
+    @api.expect(review_update_model, validate=True)
     @api.response(200, 'Review updated successfully')
     @api.response(403, 'Unauthorized action') #3rd code required by the instruction!
     @api.response(404, 'Review not found')
@@ -85,7 +90,7 @@ class ReviewResource(Resource):
         payload = request.get_json()
         # user_id & place_id must not be altered
         payload.pop('place_id', None)
-        facade.update_review(review_id, payload)
+        facade.update_review(current_user, review_id, payload)
         return review.to_dict(), 200
 
     @jwt_required()
