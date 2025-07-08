@@ -11,7 +11,7 @@ def admin_required(fn):
     """
     @wraps(fn)
     def wrapper(*args, **kwargs):
-        # * : args wth nme et ** wth
+        # * : args without namee & ** args with name
         verify_jwt_in_request()
         claims = get_jwt()
         if not claims.get("is_admin", False):
