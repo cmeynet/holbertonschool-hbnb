@@ -79,7 +79,7 @@ class PlaceList(Resource):
     def get(self):
         """Public: list all places"""
         places = facade.get_all_places()
-        return [p.to_dict() for p in places], 200
+        return [{"id": p.id, "title": p.title, "price": p.price} for p in places], 200
 
 
 @api.route("/<place_id>")
@@ -91,7 +91,16 @@ class PlaceResource(Resource):
         place = facade.get_place(place_id)
         if not place:
             return {"error": "Place not found"}, 404
-        return place.to_dict(), 200
+        return {
+            "id": place.id,
+            "title": place.title,
+            "description": place.description,
+            "price": place.price,
+            "latitude": place.latitude,
+            "longitude": place.longitude,
+            "owner": { "id": place.owner.id }
+            }, 200
+
 
     @jwt_required()
     @api.expect(place_update_model, validate=True)
