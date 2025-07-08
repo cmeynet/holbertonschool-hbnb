@@ -149,16 +149,21 @@ class HBnBFacade:
             raise KeyError("Place not found")
         return place.reviews
 
-    def update_review(self, current_user_id, review_id, review_data):
+    def update_review(self, current_user_id, review_id, review_data, is_admin=False):
+        """
+        Update a review : only author can modifiate + if is an administrator
+        """
         review = self.review_repo.get(review_id)
         if not review:
             raise KeyError("Review not found")
 
-        if review.user.id != current_user_id:
+        if not is_admin and str(review.user.id) != str(current_user_id):
             raise PermissionError("Unauthorized action")
 
+        # For not change user and place
         review_data.pop("user_id", None)
         review_data.pop("place_id", None)
+
         self.review_repo.update(review_id, review_data)
         return review
 
