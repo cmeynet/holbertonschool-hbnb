@@ -1,9 +1,6 @@
 from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
-from app.extensions import admin_required
-
 
 api = Namespace('users', description='User operations')
 
@@ -12,8 +9,7 @@ user_model = api.model('User', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email of the user'),
-    'password': fields.String(required=True, description="Password of the user"),
-    'is_admin':   fields.Boolean(default=False, description='Admin flag')
+    'password': fields.String(required=True, description="Password of the user")
 })
 
 user_update_model = api.model('UserUpdate', {
@@ -88,4 +84,3 @@ class UserResource(Resource):
         
         updated = facade.update_user(current_user, user_id, payload)
         return updated.to_dict(), 200
-    
