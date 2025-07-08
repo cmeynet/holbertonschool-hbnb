@@ -82,6 +82,6 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
         
-        updated = facade.update_user(user_id, payload)
+        updated = facade.update_user(current_user, user_id, payload)
         return updated.to_dict(), 200
     
