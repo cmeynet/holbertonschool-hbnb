@@ -11,6 +11,7 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns
 from app.api.v1.protected import api as protected_ns
+from app.api.v1.admin_user import api as admin_users_ns
 
 jwt = JWTManager()
 
