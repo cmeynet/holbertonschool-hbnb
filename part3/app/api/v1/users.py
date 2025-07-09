@@ -77,7 +77,7 @@ class UserResource(Resource):
     @api.response(403, 'Unauthorized action') # 2nd code required by the instructions
     def put(self, user_id):
         current_user = get_jwt_identity()
-        is_admin = get_jwt()['is_admin']
+        is_admin = get_jwt().get('is_admin', False)
         if str(current_user) != str(user_id) and is_admin is False:
             return {'error': 'Unauthorized action'}, 403
 
@@ -90,5 +90,5 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
         
-        updated = facade.update_user(current_user, user_id, payload)
+        updated = facade.update_user(current_user, user_id, payload, is_admin=is_admin)
         return updated.to_dict(), 200
