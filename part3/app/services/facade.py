@@ -26,17 +26,17 @@ class HBnBFacade:
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
     
-    def update_user(self, current_user_id, user_id, user_data):
+    def update_user(self, current_user_id, user_id, user_data, is_admin=False):
         """
         Only the logged-in user can modify his profile.
         Sensitive fields (email, password) are protected.
         """
-        if current_user_id != user_id:
+        if not is_admin and current_user_id != user_id:
             raise PermissionError("Unauthorized action")
 
         # FIX : protection champs email/password
         forbidden_fields = {"email", "password"}
-        if forbidden_fields.intersection(user_data):
+        if not is_admin and forbidden_fields.intersection(user_data):
             raise ValueError("You cannot modify email or password")
 
         self.user_repo.update(user_id, user_data)
