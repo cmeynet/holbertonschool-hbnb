@@ -65,23 +65,29 @@ class HBnBFacade:
         return self.get_amenity(amenity_id)
 
     # PLACE
-    def create_place(self, place_data):
-        owner = self.user_repo.get_by_attribute('id', place_data['owner_id'])
-        if not owner:
-            raise KeyError('Invalid input data')
+    def create_place(self, current_user_id, place_data):
+        """POST /places/ : le propriétaire est forcé à current_user_id."""
+        user = self.get_user(current_user_id)
+        if not user:
+            raise KeyError("User not found")
 
-        # amenities = place_data.pop('amenities', None)
-        
-        place = Place(**place_data)
+        # owner_id from the client is completely ignored
+        place_data.pop("owner_id", None)
+
+        amenities_payload = place_data.pop("amenities", None)
+
+        place = Place(owner=user, **place_data)
         self.place_repo.add(place)
+        user.add_place(place)
 
-        """if amenities:
-            for a in amenities:
-                amenity = self.get_amenity(a['id'])
+        # connects existing amenities
+        if amenities_payload:
+            for item in amenities_payload:
+                amenity = self.get_amenity(item["id"])
                 if not amenity:
-                    raise KeyError('Invalid input data')
-                place.amenities.append(amenity)"""
-
+                    raise KeyError("Invalid amenity id")
+                place.add_amenity(amenity)
+        
         db.session.commit()
         
         return place
