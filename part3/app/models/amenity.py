@@ -1,5 +1,5 @@
 from .baseclass import BaseModel
-from app import db
+from app.extensions import db
 from sqlalchemy.orm import validates
 
 class Amenity(BaseModel):

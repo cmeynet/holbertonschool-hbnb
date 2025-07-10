@@ -1,7 +1,7 @@
 from .baseclass import BaseModel
 from .place import Place
 from .user import User
-from app import db
+from app.extensions import db
 from sqlalchemy.orm import validates
 
 class Review(BaseModel):

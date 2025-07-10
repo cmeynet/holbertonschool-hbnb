@@ -1,6 +1,6 @@
 from .baseclass import BaseModel
 import re
-from app import db, bcrypt
+from app.extensions import db, bcrypt
 from sqlalchemy.orm import validates
 
 class User(BaseModel):
