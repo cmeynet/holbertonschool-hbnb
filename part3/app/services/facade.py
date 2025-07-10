@@ -1,19 +1,25 @@
-from app.persistence.repository import InMemoryRepository
 from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
+from app.persistence.repository import SQLAlchemyRepository
+from app.services.repositories.user_repository import UserRepository
+from app.services.repositories.place_repository import PlaceRepository
+from app.services.repositories.review_repository import ReviewRepository
+from app.services.repositories.amenity_repository import AmenityRepository
+from app import db
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
+        self.user_repo = UserRepository()
+        self.place_repo = PlaceRepository()
+        self.review_repo = ReviewRepository()
+        self.amenity_repo = AmenityRepository()
 
     # USER
     def create_user(self, user_data):
         user = User(**user_data)
+        user.hash_password(user_data['password'])
         self.user_repo.add(user)
         return user
     
@@ -24,7 +30,7 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
     
     def update_user(self, current_user_id, user_id, user_data, is_admin=False):
         """
@@ -59,29 +65,25 @@ class HBnBFacade:
         return self.get_amenity(amenity_id)
 
     # PLACE
-    def create_place(self, current_user_id, place_data):
-        """POST /places/ : le propriétaire est forcé à current_user_id."""
-        user = self.get_user(current_user_id)
-        if not user:
-            raise KeyError("User not found")
+    def create_place(self, place_data):
+        owner = self.user_repo.get_by_attribute('id', place_data['owner_id'])
+        if not owner:
+            raise KeyError('Invalid input data')
 
-        # owner_id from the client is completely ignored
-        place_data.pop("owner_id", None)
-
-        amenities_payload = place_data.pop("amenities", None)
-
-        place = Place(owner=user, **place_data)
+        # amenities = place_data.pop('amenities', None)
+        
+        place = Place(**place_data)
         self.place_repo.add(place)
-        user.add_place(place)
 
-        # connects existing amenities
-        if amenities_payload:
-            for item in amenities_payload:
-                amenity = self.get_amenity(item["id"])
+        """if amenities:
+            for a in amenities:
+                amenity = self.get_amenity(a['id'])
                 if not amenity:
-                    raise KeyError("Invalid amenity id")
-                place.add_amenity(amenity)
+                    raise KeyError('Invalid input data')
+                place.amenities.append(amenity)"""
 
+        db.session.commit()
+        
         return place
 
     def get_place(self, place_id):
@@ -98,11 +100,11 @@ class HBnBFacade:
         if not place:
             raise KeyError("Place not found")
 
-        # Contrôle de propriété (on saute si admin)
+        # Property control (skip if admin)
         if not is_admin and str(place.owner.id) != str(current_user_id):
             raise PermissionError("Unauthorized action")
 
-        # Champs protégés
+        # Protected fields
         for k in ("owner", "owner_id", "id"):
             place_data.pop(k, None)
 
@@ -184,6 +186,9 @@ class HBnBFacade:
         user.delete_review(review)
         place.delete_review(review)
         self.review_repo.delete(review_id)
+
+        db.session.delete(review)
+        db.session.commit()
 
     def user_already_reviewed(self, user_id: str, place_id: str) -> bool:
         """
