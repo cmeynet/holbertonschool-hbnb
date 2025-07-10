@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restx import Api
 from flask_jwt_extended import JWTManager
+from flask_sqlalchemy import SQLAlchemy
 
 from app.extensions import bcrypt
 from config import DevelopmentConfig
@@ -13,6 +14,7 @@ from app.api.v1.auth import api as auth_ns
 from app.api.v1.protected import api as protected_ns
 
 jwt = JWTManager()
+db = SQLAlchemy()
 
 
 def create_app(config_class="config.DevelopmentConfig"):
@@ -27,6 +29,7 @@ def create_app(config_class="config.DevelopmentConfig"):
     # Step 2: Initialize Bcrypt with the Flask application
     bcrypt.init_app(app)
     jwt.init_app(app)
+    db.init_app(app)
 
     # Step 3: Create the Flask-RESTx API
     api = Api(
