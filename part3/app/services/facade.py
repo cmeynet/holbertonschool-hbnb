@@ -7,7 +7,7 @@ from app.services.repositories.user_repository import UserRepository
 from app.services.repositories.place_repository import PlaceRepository
 from app.services.repositories.review_repository import ReviewRepository
 from app.services.repositories.amenity_repository import AmenityRepository
-from app import db
+from app.extensions import db
 
 class HBnBFacade:
     def __init__(self):
@@ -18,6 +18,11 @@ class HBnBFacade:
 
     # USER
     def create_user(self, user_data):
+        if self.user_repo.count() == 0:
+            user_data['is_admin'] = True
+        else:
+            user_data['is_admin'] = user_data.get('is_admin', False)
+
         user = User(**user_data)
         user.hash_password(user_data['password'])
         self.user_repo.add(user)
@@ -114,9 +119,20 @@ class HBnBFacade:
         for k in ("owner", "owner_id", "id"):
             place_data.pop(k, None)
 
+        # Convert amenity IDs to Amenity objects
+        if "amenities" in place_data:
+            amenity_ids = place_data.pop("amenities")
+            new_amenities = []
+            for aid in amenity_ids:
+                amenity = self.get_amenity(aid)
+                if not amenity:
+                    raise KeyError(f"Amenity not found: {aid}")
+                new_amenities.append(amenity)
+                
+            place.amenities = new_amenities
+
         self.place_repo.update(place_id, place_data)
         return place
-
 
     # REVIEWS
     def create_review(self, current_user_id, review_data):
@@ -135,11 +151,12 @@ class HBnBFacade:
             raise ValueError("You have already reviewed this place")
 
         review = Review(
-            review_data["text"],
-            review_data["rating"],
-            place,
-            user
-            )
+            text=review_data["text"],
+            rating=review_data["rating"],
+            place_id=place.id,
+            user_id=user.id
+        )
+        
         self.review_repo.add(review)
         user.add_review(review)
         place.add_review(review)
@@ -186,14 +203,16 @@ class HBnBFacade:
         if not is_admin and str(review.user.id) != str(current_user_id):
             raise PermissionError("Unauthorized action")
 
-        user = review.user
-        place = review.place
+        with db.session.no_autoflush:
+            user = review.user
+            place = review.place
 
-        user.delete_review(review)
-        place.delete_review(review)
-        self.review_repo.delete(review_id)
-
-        db.session.delete(review)
+            if review in user.reviews:
+                user.reviews.remove(review)
+            if review in place.reviews:
+                place.reviews.remove(review)
+            
+            db.session.delete(review)
         db.session.commit()
 
     def user_already_reviewed(self, user_id: str, place_id: str) -> bool:

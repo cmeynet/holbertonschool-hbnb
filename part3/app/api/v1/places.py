@@ -54,6 +54,7 @@ place_update_model = api.model(
 @api.route("/")
 class PlaceList(Resource):
     @jwt_required()
+    @api.doc(security='Bearer Auth')
     @api.expect(place_create_model, validate=True)
     @api.response(201, "Place successfully created")
     @api.response(400, "Bad request")
@@ -104,6 +105,7 @@ class PlaceResource(Resource):
             }, 200
 
     @jwt_required()
+    @api.doc(security='Bearer Auth')
     @api.expect(place_update_model, validate=True)
     @api.response(200, "Place updated successfully")
     @api.response(403, "Unauthorized action")  # the only code required by the instructions
@@ -143,6 +145,7 @@ class PlaceAmenities(Resource):
     )
 
     @jwt_required()
+    @api.doc(security='Bearer Auth')
     @api.expect(amenity_ids_model, validate=True)
     @api.response(200, "Amenities added successfully")
     @api.response(400, "Bad request")

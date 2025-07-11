@@ -25,6 +25,7 @@ review_update_model = api.model('ReviewUpdate', {
 @api.route('/')
 class ReviewList(Resource):
     @jwt_required()
+    @api.doc(security='Bearer Auth')
     @api.expect(review_in_model, validate=True)
     @api.response(201, "Review is created")
     @api.response(400, 'Invalid input data or business rule violated')
@@ -33,7 +34,7 @@ class ReviewList(Resource):
         Register a new review
         """
         current_user = get_jwt_identity()
-        data = request.get_json()
+        data = api.payload
 
         # If place must exist
         place = facade.get_place(data['place_id'])
@@ -71,6 +72,7 @@ class ReviewResource(Resource):
         return review.to_dict()
 
     @jwt_required()
+    @api.doc(security='Bearer Auth')
     @api.expect(review_update_model, validate=True)
     @api.response(200, 'Review updated successfully')
     @api.response(403, 'Unauthorized action')  # 3rd code required by the instruction!
@@ -96,6 +98,7 @@ class ReviewResource(Resource):
         return review.to_dict(), 200
 
     @jwt_required()
+    @api.doc(security='Bearer Auth')
     @api.response(204, 'Review deleted successfully')
     @api.response(403, 'Unauthorized action')
     @api.response(404, 'Review not found')

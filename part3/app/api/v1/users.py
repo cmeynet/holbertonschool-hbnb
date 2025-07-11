@@ -2,7 +2,16 @@ from flask_restx import Namespace, Resource, fields
 from app.services import facade
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
-api = Namespace('users', description='User operations')
+authorizations = {
+        'Bearer Auth': {
+        'type': 'apiKey',
+        'in': 'header',
+        'name': 'Authorization',
+        'description': "Enter 'Bearer' followed by your JWT token"
+    }
+}
+
+api = Namespace('users', description='User operations', authorizations=authorizations, security='Bearer Auth')
 
 # Define the user model for input validation and documentation !
 user_model = api.model('User', {
@@ -21,6 +30,7 @@ user_update_model = api.model('UserUpdate', {
 @api.route('/')
 class UserList(Resource):
     @jwt_required(optional=True)
+    @api.doc(security='Bearer Auth')
     @api.expect(user_model, validate=True)
     @api.response(201, 'User created with success')
     @api.response(409, 'Email already registered')
@@ -35,15 +45,15 @@ class UserList(Resource):
             if current_user == {} or current_user['is_admin'] is False:
                 return {'error': 'Admin privileges required'}, 403
 
-        # Vérifie si l’e-mail est déjà utilisé
+        # Check if the email is already in use
         if facade.get_user_by_email(user_data['email']):
             return {'error': 'Email already registered'}, 409
 
         try:
-            # Crée un nouvel utilisateur, le mot de passe est haché automatiquement
+            # Creates a new user, password is hashed automatically
             new_user = facade.create_user(user_data)
 
-            # Réponse simple : pas de mot de passe
+            # Simple answer: no password
             return {'id': str(new_user.id), 'message': 'User created'}, 201
 
         except Exception as error:
@@ -70,6 +80,7 @@ class UserResource(Resource):
         return user.to_dict(), 200
 
     @jwt_required()
+    @api.doc(security='Bearer Auth')
     @api.expect(user_update_model, validate=True)
     @api.response(200, 'User updated successfully')
     @api.response(404, 'User not found')
