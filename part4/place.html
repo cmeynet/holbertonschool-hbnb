@@ -13,25 +13,38 @@
         <img src="images/logo.png" alt="HBnB logo" class="logo">
         <nav>
             <a href="index.html">Home</a>
-            <a href="login.html">Login</a>
+            <a href="login.html" class="login-button">Login</a>
         </nav>
     </header>
     <main>
-        <section id="place-details">
-            <h2>Vila Mialanne vue mer</h2>
-            <p>Victoire Boutin</p>
-            <p>Prix par nuit : 108€</p>
-            <p>Villa de charme dans le sud – 4 chambres & piscine privée
+        <section id="place-details" class="place-details">
+            <p>Vila Mialanne vue mer</p>
+            <p class="place-info">Host name: Victoire Boutin</p>
+            <p class="place-info">Price per night: 108€</p>
+            <p class="place_info">
+                Villa de charme dans le sud – 4 chambres & piscine privée. <br>
                 Profitez d’un séjour d’exception dans cette villa spacieuse et lumineuse, idéale pour des vacances en
                 famille ou entre amis.
-                4 chambres confortables, un grand séjour ouvert sur l’extérieur, et une piscine privée pour se
-                rafraîchir tout au long de la journée. Calme, soleil, et convivialité au rendez-vous.</p>
+                4chambres confortables, un grand séjour ouvert sur l’extérieur, et une piscine privée pour se
+                rafraîchir tout au long de la journée. Calme, soleil, et convivialité au rendez-vous.
+            </p>
         </section>
         <section id="reviews">
-            <!-- Reviews will be populated dynamically -->
+            <div class="review-card">
+                <p>Clémence Meynet</p>
+                <p>Super séjour, la maison est encore plus belle que sur les photos !</p>
+                <p>★★★★★</p>
+            </div>
+
+            <div class="review-card">
+                <p>Pénélope Rehri</p>
+                <p>Très calme et propre, parfait pour un week-end en couple.</p>
+                <p>★★★★☆</p>
+            </div>
+
         </section>
         <section id="add-review">
-            <h2>Add a Review</h2>
+            <p>Add a Review</p>
             <form id="review-form">
                 <label for="review-text">Review:</label>
                 <textarea id="review-text" name="review-text" required></textarea>
