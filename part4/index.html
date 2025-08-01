@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Places</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="images/icon.png">
+</head>
+<body>
+    <header>
+        <img class="logo" src="images/logo.png">
+        <a href="login.html" id="login-link" class="login-button">Login</a>
+        <nav>
+            <a href="index.html">Index</a>
+        </nav>
+    </header>
+    <div class="page-container">
+        <main>
+            <h1>Available Places</h1>
+            <section id="filter">
+                <label for="price-filter">Max Price:</label>
+                <select id="price-filter">
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </section>
+            <section id="places-list">
+                <!-- List of places will be populated dynamically -->
+                <div class="place-card">
+                    <h3>Beautiful Beach House</h3>
+                    <p class="price">Price per night: $150</p>
+                    <button type="button" class="details-button">View Details</button>
+                </div>
+
+                <div class="place-card">
+                    <h3>Cosy Cabin</h3>
+                    <p class="price">Price per night: $100</p>
+                    <button type="button" class="details-button">View Details</button>
+                </div>
+
+                <div class="place-card">
+                    <h3>Modern Apartement</h3>
+                    <p class="price">Price per night: $200</p>
+                    <button type="button" class="details-button">View Details</button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <footer>
+        <p>&copy; 2025 HBnB Evolution. All rights reserved.</p>
+    </footer>
+    <script src="scripts.js"></script>
+</body>
+</html>
